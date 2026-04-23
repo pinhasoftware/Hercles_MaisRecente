@@ -81,12 +81,12 @@ export default function PTChat() {
     );
   }, [search, addedIds]);
 
+  const [showAddSheet, setShowAddSheet] = useState(false);
+
   if (clientId) {
     const client = clientById(clientId);
     return <ChatThread client={client} chatStore={chatStore} setChatStore={setChatStore} onBack={() => navigate("/pt/chat")} />;
   }
-
-  const [showAddSheet, setShowAddSheet] = useState(false);
 
   return (
     <div className="px-5 pb-24 pt-6">
