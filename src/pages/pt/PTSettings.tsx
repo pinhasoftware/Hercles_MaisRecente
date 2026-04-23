@@ -1,33 +1,254 @@
-import { Bell, Brain, LogOut, Shield, UserCog } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { User, Dumbbell, Bell, Calendar, Users, Wallet, Palette, Plug, Shield, Cog, Settings as SettingsIcon, LogOut } from "lucide-react";
+import { SettingsLayout, type SettingsSection } from "@/components/SettingsLayout";
 import { useDemo } from "@/contexts/DemoContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+
+const SECTIONS: SettingsSection[] = [
+  { id: "geral", label: "Geral", icon: SettingsIcon },
+  { id: "perfil", label: "Perfil", icon: User },
+  { id: "treino", label: "Preferências de Treino", icon: Dumbbell },
+  { id: "notificacoes", label: "Notificações", icon: Bell },
+  { id: "agendamento", label: "Agendamento", icon: Calendar },
+  { id: "clientes", label: "Gestão de Clientes", icon: Users },
+  { id: "pagamentos", label: "Pagamentos e Finanças", icon: Wallet },
+  { id: "aparencia", label: "Aparência", icon: Palette },
+  { id: "integracoes", label: "Integrações", icon: Plug },
+  { id: "seguranca", label: "Segurança", icon: Shield },
+  { id: "avancadas", label: "Avançadas", icon: Cog },
+];
 
 export default function PTSettings() {
+  const [active, setActive] = useState("geral");
   const { setRole } = useDemo();
-  const rows = [
-    { icon: UserCog, label: "Perfil profissional", value: "Personal trainer" },
-    { icon: Bell, label: "Notificações", value: "Clientes, pagamentos e chat" },
-    { icon: Brain, label: "Assistente AI", value: "Sugestões de planos" },
-    { icon: Shield, label: "Segurança", value: "Sessão demo protegida" },
-  ];
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  function handleSave() { toast.success("Definições guardadas"); }
+
+  async function handleLogout() {
+    setRole(null);
+    await signOut();
+    navigate("/auth", { replace: true });
+  }
 
   return (
-    <div className="px-5 pb-6 pt-6">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Conta PT</p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight">Definições</h1>
-      </header>
-      <section className="mt-6 space-y-3">
-        {rows.map(({ icon: Icon, label, value }) => (
-          <article key={label} className="glass flex items-center gap-3 rounded-2xl p-4">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-secondary text-primary"><Icon className="h-5 w-5" /></div>
-            <div><p className="text-sm font-bold">{label}</p><p className="text-xs text-muted-foreground">{value}</p></div>
-          </article>
-        ))}
-      </section>
-      <Button variant="secondary" className="mt-6 h-12 w-full rounded-2xl" onClick={() => setRole(null)}>
-        <LogOut className="mr-2 h-4 w-4" /> Trocar perfil demo
-      </Button>
+    <SettingsLayout
+      title="Definições"
+      backTo="/pt"
+      sections={SECTIONS}
+      active={active}
+      onSelect={setActive}
+      onSave={handleSave}
+    >
+      {active === "geral" && (
+        <Section title="Geral" desc="Idioma, fuso horário e formatos">
+          <FieldSelect label="Idioma" defaultValue="pt-PT" options={[
+            { value: "pt-PT", label: "Português (PT)" },
+            { value: "pt-BR", label: "Português (BR)" },
+            { value: "en", label: "English" },
+            { value: "es", label: "Español" },
+          ]}/>
+          <FieldSelect label="Fuso horário" defaultValue="Europe/Lisbon" options={[
+            { value: "Europe/Lisbon", label: "Europe/Lisbon (UTC+0)" },
+            { value: "Europe/Madrid", label: "Europe/Madrid (UTC+1)" },
+            { value: "America/Sao_Paulo", label: "America/Sao_Paulo (UTC-3)" },
+          ]}/>
+          <FieldSelect label="Formato de data" defaultValue="dmy" options={[
+            { value: "dmy", label: "DD/MM/AAAA" },
+            { value: "mdy", label: "MM/DD/AAAA" },
+            { value: "ymd", label: "AAAA-MM-DD" },
+          ]}/>
+          <FieldSelect label="Moeda" defaultValue="EUR" options={[
+            { value: "EUR", label: "€ Euro" },
+            { value: "USD", label: "$ US Dollar" },
+            { value: "BRL", label: "R$ Real" },
+            { value: "GBP", label: "£ Pound" },
+          ]}/>
+          <FieldSelect label="Unidade de peso" defaultValue="kg" options={[
+            { value: "kg", label: "Quilogramas (kg)" },
+            { value: "lbs", label: "Libras (lbs)" },
+          ]}/>
+        </Section>
+      )}
+
+      {active === "perfil" && (
+        <Section title="Perfil profissional" desc="O que os teus clientes vêem">
+          <Field label="Nome profissional"><Input defaultValue="Ricardo Pereira" /></Field>
+          <Field label="Biografia"><Textarea placeholder="Conta a tua história..." /></Field>
+          <Field label="Email"><Input type="email" defaultValue="ricardo@fitpilot.app" /></Field>
+          <Field label="Telefone"><Input type="tel" placeholder="+351 9XX XXX XXX" /></Field>
+          <Field label="Especialidades"><Input placeholder="Hipertrofia, reabilitação, perda de peso..." /></Field>
+          <Field label="Certificações"><Textarea placeholder="IPDJ Nível IV, NSCA-CPT..." /></Field>
+          <Field label="Localização"><Input placeholder="Lisboa, Portugal" /></Field>
+        </Section>
+      )}
+
+      {active === "treino" && (
+        <Section title="Preferências de Treino" desc="Defaults para os planos que crias">
+          <FieldSelect label="Duração padrão da sessão" defaultValue="60" options={[
+            { value: "30", label: "30 min" },
+            { value: "45", label: "45 min" },
+            { value: "60", label: "60 min" },
+            { value: "90", label: "90 min" },
+          ]}/>
+          <FieldSelect label="Formato preferido" defaultValue="presencial" options={[
+            { value: "presencial", label: "Presencial" },
+            { value: "online", label: "Online" },
+            { value: "hibrido", label: "Híbrido" },
+          ]}/>
+          <FieldToggle label="Sugestões da Pilot AI no Workout Builder" defaultChecked />
+          <FieldToggle label="Auto-progressão recomendada" defaultChecked />
+        </Section>
+      )}
+
+      {active === "notificacoes" && (
+        <Section title="Notificações" desc="Push e in-app">
+          <FieldToggle label="Mensagens de clientes" defaultChecked />
+          <FieldToggle label="Pagamentos em atraso" defaultChecked />
+          <FieldToggle label="Renovações próximas" defaultChecked />
+          <FieldToggle label="Novos check-ins de clientes" defaultChecked />
+          <FieldToggle label="Lembretes pessoais" defaultChecked />
+          <FieldToggle label="Resumo diário (manhã)" />
+          <FieldToggle label="Som das notificações" defaultChecked />
+        </Section>
+      )}
+
+      {active === "agendamento" && (
+        <Section title="Agendamento" desc="Disponibilidade e regras de cancelamento">
+          <Field label="Horário de trabalho"><Input placeholder="Seg-Sex 07:00–21:00" /></Field>
+          <FieldSelect label="Buffer entre sessões" defaultValue="15" options={[
+            { value: "0", label: "Sem buffer" },
+            { value: "10", label: "10 minutos" },
+            { value: "15", label: "15 minutos" },
+            { value: "30", label: "30 minutos" },
+          ]}/>
+          <FieldSelect label="Política de cancelamento" defaultValue="24" options={[
+            { value: "12", label: "12h antes" },
+            { value: "24", label: "24h antes" },
+            { value: "48", label: "48h antes" },
+          ]}/>
+        </Section>
+      )}
+
+      {active === "clientes" && (
+        <Section title="Gestão de Clientes" desc="Onboarding e templates">
+          <Field label="Mensagem de boas-vindas"><Textarea defaultValue="Bem-vindo! Estou aqui para te ajudar a alcançar os teus objetivos." /></Field>
+          <FieldSelect label="Frequência sugerida de check-ins" defaultValue="30" options={[
+            { value: "15", label: "Cada 15 dias" },
+            { value: "30", label: "Cada 30 dias" },
+            { value: "60", label: "Cada 60 dias" },
+          ]}/>
+          <Field label="Limite de clientes"><Input type="number" defaultValue="50" /></Field>
+        </Section>
+      )}
+
+      {active === "pagamentos" && (
+        <Section title="Pagamentos e Finanças" desc="Métodos e dados bancários">
+          <FieldSelect label="Método de pagamento preferido" defaultValue="mbway" options={[
+            { value: "mbway", label: "MB WAY" },
+            { value: "transferencia", label: "Transferência bancária" },
+            { value: "stripe", label: "Stripe" },
+            { value: "dinheiro", label: "Dinheiro" },
+          ]}/>
+          <Field label="IBAN"><Input placeholder="PT50 0000 0000 0000 0000 0000 0" /></Field>
+          <Field label="NIF"><Input placeholder="999 999 999" /></Field>
+        </Section>
+      )}
+
+      {active === "aparencia" && (
+        <Section title="Aparência" desc="Tema e identidade visual">
+          <FieldSelect label="Tema" defaultValue="dark" options={[
+            { value: "dark", label: "Escuro" },
+            { value: "light", label: "Claro" },
+            { value: "system", label: "Automático (sistema)" },
+          ]}/>
+          <Field label="Cor da marca"><Input type="color" defaultValue="#3B82F6" className="h-11 w-24" /></Field>
+        </Section>
+      )}
+
+      {active === "integracoes" && (
+        <Section title="Integrações" desc="Liga ferramentas externas">
+          <FieldToggle label="WhatsApp Business" />
+          <FieldToggle label="Google Calendar" />
+          <FieldToggle label="Zoom" />
+          <FieldToggle label="Apple Health / Google Fit" />
+          <FieldToggle label="Exportar para Excel" defaultChecked />
+        </Section>
+      )}
+
+      {active === "seguranca" && (
+        <Section title="Segurança" desc="Conta, password e sessões">
+          <Button variant="outline" className="w-full justify-start">Alterar palavra-passe</Button>
+          <FieldToggle label="Autenticação de dois fatores (2FA)" />
+          <Button variant="outline" className="w-full justify-start">Ver sessões ativas</Button>
+          <Button onClick={handleLogout} variant="outline" className="w-full justify-start">
+            <LogOut className="mr-2 h-4 w-4" /> Terminar sessão
+          </Button>
+          <Button variant="destructive" className="w-full">Eliminar conta</Button>
+        </Section>
+      )}
+
+      {active === "avancadas" && (
+        <Section title="Avançadas" desc="Versão, dados e legal">
+          <Field label="Versão"><Input value="v1.0.0" readOnly /></Field>
+          <Button variant="outline" className="w-full justify-start">Enviar feedback</Button>
+          <Button variant="outline" className="w-full justify-start">Exportar os meus dados</Button>
+          <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground">Termos de Serviço</Button>
+          <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground">Política de Privacidade</Button>
+        </Section>
+      )}
+    </SettingsLayout>
+  );
+}
+
+function Section({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-lg font-bold tracking-tight">{title}</h2>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+      <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs">{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+function FieldSelect({ label, defaultValue, options }: { label: string; defaultValue: string; options: { value: string; label: string }[] }) {
+  return (
+    <Field label={label}>
+      <Select defaultValue={defaultValue}>
+        <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </Field>
+  );
+}
+
+function FieldToggle({ label, defaultChecked }: { label: string; defaultChecked?: boolean }) {
+  return (
+    <div className="flex items-center justify-between rounded-xl bg-secondary/40 p-3">
+      <span className="text-sm">{label}</span>
+      <Switch defaultChecked={defaultChecked} />
     </div>
   );
 }
