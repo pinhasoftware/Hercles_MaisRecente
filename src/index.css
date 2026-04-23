@@ -2,95 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* FitPilot — Dark-first Whoop/Strava energetic design system.
+   All colors HSL. */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core surfaces */
+    --background: 224 47% 7%;            /* #0A0F1E */
+    --foreground: 220 14% 96%;           /* #F9FAFB */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --surface-1: 224 35% 10%;
+    --surface-2: 224 30% 13%;
+    --glass: 0 0% 100%;                  /* used with /4 /8 alpha */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --card: 224 35% 10%;
+    --card-foreground: 220 14% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --popover: 224 40% 9%;
+    --popover-foreground: 220 14% 96%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Brand */
+    --primary: 159 100% 45%;             /* #00E5A0 energetic green */
+    --primary-foreground: 224 47% 7%;
+    --primary-glow: 159 100% 60%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --secondary: 224 25% 16%;
+    --secondary-foreground: 220 14% 96%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 224 20% 14%;
+    --muted-foreground: 220 9% 65%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --accent: 263 79% 57%;               /* #7C3AED purple — AI */
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 263 90% 70%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --energy: 38 92% 50%;                /* #F59E0B amber */
+    --energy-foreground: 224 47% 7%;
 
-    --radius: 0.5rem;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --sidebar-background: 0 0% 98%;
+    --success: 159 100% 45%;
+    --warning: 38 92% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --border: 224 20% 18%;
+    --input: 224 20% 18%;
+    --ring: 159 100% 45%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --radius: 1rem;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(159 100% 45%), hsl(170 100% 50%));
+    --gradient-ai: linear-gradient(135deg, hsl(263 79% 57%), hsl(283 90% 65%));
+    --gradient-energy: linear-gradient(135deg, hsl(38 92% 50%), hsl(20 95% 55%));
+    --gradient-hero: linear-gradient(160deg, hsl(224 47% 7%) 0%, hsl(224 47% 10%) 50%, hsl(263 40% 15%) 100%);
+    --gradient-glow: radial-gradient(circle at top, hsl(159 100% 45% / 0.15), transparent 60%);
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(159 100% 45% / 0.25);
+    --shadow-ai: 0 0 30px hsl(263 79% 57% / 0.35);
+    --shadow-card: 0 8px 30px -8px hsl(224 47% 3% / 0.6);
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    /* Sidebar (unused but kept) */
+    --sidebar-background: 224 35% 8%;
+    --sidebar-foreground: 220 14% 96%;
+    --sidebar-primary: 159 100% 45%;
+    --sidebar-primary-foreground: 224 47% 7%;
+    --sidebar-accent: 224 20% 14%;
+    --sidebar-accent-foreground: 220 14% 96%;
+    --sidebar-border: 224 20% 18%;
+    --sidebar-ring: 159 100% 45%;
 
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 }
 
@@ -98,8 +83,90 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
+  html, body, #root {
+    @apply h-full;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'ss01';
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    font-weight: 700;
   }
 }
+
+@layer components {
+  .glass {
+    background: hsl(var(--glass) / 0.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass) / 0.06);
+  }
+  .glass-strong {
+    background: hsl(var(--glass) / 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--glass) / 0.1);
+  }
+  .gradient-text-primary {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .gradient-text-ai {
+    background: var(--gradient-ai);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .ai-border {
+    position: relative;
+  }
+  .ai-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-ai);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .energy-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-primary);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+@layer utilities {
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-top { padding-top: env(safe-area-inset-top); }
+
+  /* Native time/date picker hygiene — guarantee enough space for OK/Clear buttons */
+  input[type="time"],
+  input[type="date"],
+  input[type="datetime-local"] {
+    min-width: 140px;
+    font-variant-numeric: tabular-nums;
+  }
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+}
+
