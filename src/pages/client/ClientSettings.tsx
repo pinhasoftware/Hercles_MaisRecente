@@ -13,19 +13,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 
 const SECTIONS: SettingsSection[] = [
-  { id: "geral", label: "Geral", icon: SettingsIcon },
-  { id: "perfil", label: "Perfil", icon: User },
-  { id: "treino", label: "Preferências de Treino", icon: Dumbbell },
-  { id: "notificacoes", label: "Notificações", icon: Bell },
-  { id: "agendamento", label: "Agendamento", icon: Calendar },
-  { id: "pagamentos", label: "Pagamentos e Assinatura", icon: Wallet },
-  { id: "aparencia", label: "Aparência", icon: Palette },
-  { id: "seguranca", label: "Privacidade e Segurança", icon: Shield },
-  { id: "avancadas", label: "Avançadas", icon: Cog },
+  { id: "geral", label: "Geral", icon: SettingsIcon, items: ["Idioma", "Fuso horário", "Formato de data", "Unidade de peso"] },
+  { id: "perfil", label: "Perfil", icon: User, items: ["Nome", "Idade", "Peso", "Altura", "Objetivos", "Lesões", "Restrições"] },
+  { id: "treino", label: "Preferências de Treino", icon: Dumbbell, items: ["Nível", "Dias preferidos", "Horário preferido", "Equipamento disponível", "Tipo de treino", "Hipertrofia", "Força", "Perda de peso", "Resistência"] },
+  { id: "notificacoes", label: "Notificações", icon: Bell, items: ["Mensagens do PT", "Lembretes de treino", "Lembretes de pagamento", "Check-ins", "Som das notificações"] },
+  { id: "agendamento", label: "Agendamento", icon: Calendar, items: ["Disponibilidade", "Modalidade preferida", "Presencial", "Online"] },
+  { id: "pagamentos", label: "Pagamentos e Assinatura", icon: Wallet, items: ["Método de pagamento", "MB WAY", "Histórico", "Gerir assinatura"] },
+  { id: "aparencia", label: "Aparência", icon: Palette, items: ["Tema", "Escuro", "Claro"] },
+  { id: "seguranca", label: "Privacidade e Segurança", icon: Shield, items: ["Alterar palavra-passe", "Autenticação de dois fatores", "2FA", "Terminar sessão", "Eliminar conta"] },
+  { id: "avancadas", label: "Avançadas", icon: Cog, items: ["Versão", "Exportar dados", "Enviar feedback", "Termos de Serviço", "Política de Privacidade"] },
 ];
 
 export default function ClientSettings() {
-  const [active, setActive] = useState("geral");
+  const [active, setActive] = useState<string | null>(null);
   const { setRole } = useDemo();
   const { signOut } = useAuth();
   const navigate = useNavigate();
