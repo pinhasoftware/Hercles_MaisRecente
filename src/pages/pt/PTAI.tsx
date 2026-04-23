@@ -1,29 +1,150 @@
-import { Bot, MessageSquareText, Sparkles, Wand2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Sparkles, Send, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+
+interface Msg { role: "user" | "assistant"; content: string }
+
+const SUGGESTIONS = [
+  "Plano de força 4 dias para hipertrofia",
+  "Como motivar cliente que faltou 2 sessões?",
+  "Sugere superset peito + costas",
+  "Macros para cliente em défice de 500 kcal",
+];
+
+const CANNED: Record<string, string> = {
+  default: "Boa pergunta! No modo demo as respostas são simuladas. Quando ligares ao backend, eu uso o **Lovable AI Gateway** para gerar respostas reais com base no contexto dos teus clientes.",
+  hipertrofia: "**Plano 4 dias — Hipertrofia**\n\n- **Seg** Peito + Tríceps\n- **Ter** Costas + Bíceps\n- **Qui** Pernas + Core\n- **Sex** Ombros + Braços\n\n4 séries de 8-12 reps, descanso 60-90s. Progressão: +2.5kg quando bate teto superior 2 semanas seguidas.",
+  motivar: "Sugiro mensagem curta:\n\n> *\"Olá! Notei que tens estado ausente — está tudo bem? Se precisares de adaptar o horário ou intensidade, diz-me. Estou aqui.\"*\n\nEvita tom culpabilizador. Oferece flexibilidade.",
+  superset: "**Superset Peito + Costas**\n\n- A1 — Supino plano halteres · 4×10\n- A2 — Remada curvada · 4×10\n\nDescanso 90s entre supersets. Excelente para densidade muscular e poupança de tempo.",
+  macros: "Para défice de 500 kcal:\n\n- **Proteína** 2g/kg peso corporal\n- **Gordura** 0.8g/kg\n- **Hidratos** restante das kcal\n\nExemplo (75kg, alvo 2000 kcal): 150g P · 60g G · 200g H.",
+};
+
+function pickReply(text: string): string {
+  const t = text.toLowerCase();
+  if (t.includes("hipertrofia") || t.includes("força")) return CANNED.hipertrofia;
+  if (t.includes("motivar") || t.includes("falta")) return CANNED.motivar;
+  if (t.includes("superset")) return CANNED.superset;
+  if (t.includes("macro") || t.includes("kcal") || t.includes("défice")) return CANNED.macros;
+  return CANNED.default;
+}
 
 export default function PTAI() {
-  const prompts = ["Criar plano de hipertrofia", "Adaptar treino por dor no ombro", "Resumo semanal para cliente"];
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, loading]);
+
+  function send(text: string) {
+    const t = text.trim();
+    if (!t || loading) return;
+    setMessages((prev) => [...prev, { role: "user", content: t }]);
+    setInput("");
+    setLoading(true);
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { role: "assistant", content: pickReply(t) }]);
+      setLoading(false);
+    }, 800);
+  }
 
   return (
-    <div className="px-5 pb-6 pt-6">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Assistente</p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight">AI Coach</h1>
-      </header>
-      <section className="mt-5 rounded-3xl p-5 shadow-ai" style={{ background: "var(--gradient-ai)" }}>
-        <Sparkles className="h-8 w-8 text-accent-foreground" />
-        <p className="mt-4 text-2xl font-black text-accent-foreground">Acelera planos, mensagens e análises.</p>
-        <Button className="mt-5 h-12 w-full rounded-2xl bg-background text-foreground hover:bg-background/90"><Wand2 className="mr-2 h-4 w-4" /> Gerar sugestão</Button>
-      </section>
-      <section className="mt-6 space-y-3">
-        {prompts.map((prompt) => (
-          <article key={prompt} className="glass flex items-center gap-3 rounded-2xl p-4">
-            <Bot className="h-5 w-5 text-accent" />
-            <p className="flex-1 text-sm font-bold">{prompt}</p>
-            <MessageSquareText className="h-5 w-5 text-muted-foreground" />
-          </article>
-        ))}
-      </section>
+    <div className="flex h-[calc(100vh-5rem)] flex-col px-5 pt-6">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-xl shadow-[var(--shadow-ai)]" style={{ background: "var(--gradient-ai)" }}>
+            <Sparkles className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Pilot AI</h1>
+            <p className="text-[11px] text-muted-foreground">O teu copilot de treino · demo</p>
+          </div>
+        </div>
+        <Button variant="ghost" size="icon" onClick={() => setMessages([])} aria-label="Nova conversa">
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
+
+      <ScrollArea className="flex-1" ref={scrollRef as never}>
+        <div className="space-y-3 pb-4 pr-1">
+          {messages.length === 0 && !loading && (
+            <div className="space-y-4 pt-6">
+              <div className="ai-border glass relative rounded-2xl p-4">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Olá! Sou o Pilot. Pergunta-me sobre <span className="text-foreground">planos de treino</span>, <span className="text-foreground">nutrição</span>, <span className="text-foreground">gestão de clientes</span>.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Sugestões</p>
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => send(s)}
+                    className="glass w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-accent/10"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {messages.map((m, i) => (
+            <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+              <div
+                className={cn(
+                  "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
+                  m.role === "user"
+                    ? "rounded-br-sm bg-primary text-primary-foreground"
+                    : "glass ai-border relative rounded-bl-sm",
+                )}
+              >
+                {m.content}
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="flex justify-start">
+              <div className="glass ai-border relative flex items-center gap-2 rounded-2xl rounded-bl-sm px-4 py-2.5">
+                <Loader2 className="h-4 w-4 animate-spin text-accent" />
+                <span className="text-xs text-muted-foreground">A pensar…</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+
+      <div className="sticky bottom-0 -mx-5 border-t border-border/60 bg-background/85 px-5 py-3 backdrop-blur-xl">
+        <div className="flex items-end gap-2">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send(input);
+              }
+            }}
+            placeholder="Pergunta ao Pilot…"
+            className="min-h-[44px] max-h-32 resize-none rounded-2xl"
+          />
+          <Button
+            size="icon"
+            onClick={() => send(input)}
+            disabled={!input.trim() || loading}
+            className="h-11 w-11 shrink-0 rounded-2xl"
+            style={{ background: "var(--gradient-ai)" }}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
