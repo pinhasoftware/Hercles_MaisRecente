@@ -50,7 +50,7 @@ export default function Index() {
           </Link>
           <p className="mt-3 text-center text-xs text-muted-foreground">
             Ainda sem conta?{" "}
-            <Link to="/auth" className="font-semibold text-foreground underline-offset-4 hover:underline">
+            <Link to="/auth?mode=signup" className="font-semibold text-foreground underline-offset-4 hover:underline">
               Criar conta de PT
             </Link>
           </p>

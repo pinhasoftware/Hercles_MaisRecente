@@ -454,7 +454,7 @@ function FinishOverlay({ seconds, doneSets, totalSets, onClose }: { seconds: num
           {pieces.map((p, i) => (
             <span
               key={i}
-              className={cn("absolute h-2 w-2 rounded-full", p.color)}
+              className={cn("absolute h-2 w-2 rounded-full opacity-0", p.color)}
               style={{
                 ["--tx" as never]: p.tx,
                 ["--ty" as never]: p.ty,

@@ -16,7 +16,7 @@ export default function Auth() {
   const [params] = useSearchParams();
   const inviteToken = params.get("invite");
 
-  const [mode, setMode] = useState<"signin" | "signup">(inviteToken ? "signup" : "signin");
+  const [mode, setMode] = useState<"signin" | "signup">(inviteToken || params.get("mode") === "signup" ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");

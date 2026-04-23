@@ -13,21 +13,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 
 const SECTIONS: SettingsSection[] = [
-  { id: "geral", label: "Geral", icon: SettingsIcon },
-  { id: "perfil", label: "Perfil", icon: User },
-  { id: "treino", label: "Preferências de Treino", icon: Dumbbell },
-  { id: "notificacoes", label: "Notificações", icon: Bell },
-  { id: "agendamento", label: "Agendamento", icon: Calendar },
-  { id: "clientes", label: "Gestão de Clientes", icon: Users },
-  { id: "pagamentos", label: "Pagamentos e Finanças", icon: Wallet },
-  { id: "aparencia", label: "Aparência", icon: Palette },
-  { id: "integracoes", label: "Integrações", icon: Plug },
-  { id: "seguranca", label: "Segurança", icon: Shield },
-  { id: "avancadas", label: "Avançadas", icon: Cog },
+  { id: "geral", label: "Geral", icon: SettingsIcon, items: ["Idioma", "Fuso horário", "Formato de data", "Moeda", "Unidade de peso"] },
+  { id: "perfil", label: "Perfil", icon: User, items: ["Nome profissional", "Biografia", "Email", "Telefone", "Especialidades", "Certificações", "Localização"] },
+  { id: "treino", label: "Preferências de Treino", icon: Dumbbell, items: ["Duração padrão da sessão", "Formato preferido", "Sugestões da Pilot AI", "Auto-progressão"] },
+  { id: "notificacoes", label: "Notificações", icon: Bell, items: ["Mensagens de clientes", "Pagamentos em atraso", "Renovações próximas", "Novos check-ins", "Lembretes pessoais", "Resumo diário", "Som das notificações"] },
+  { id: "agendamento", label: "Agendamento", icon: Calendar, items: ["Horário de trabalho", "Buffer entre sessões", "Política de cancelamento", "Modalidade preferida"] },
+  { id: "clientes", label: "Gestão de Clientes", icon: Users, items: ["Mensagem de boas-vindas", "Frequência de check-ins", "Limite de clientes"] },
+  { id: "pagamentos", label: "Pagamentos e Finanças", icon: Wallet, items: ["Método de pagamento", "IBAN", "NIF"] },
+  { id: "aparencia", label: "Aparência", icon: Palette, items: ["Tema", "Cor da marca"] },
+  { id: "integracoes", label: "Integrações", icon: Plug, items: ["WhatsApp Business", "Google Calendar", "Zoom", "Apple Health", "Google Fit", "Exportar para Excel"] },
+  { id: "seguranca", label: "Segurança", icon: Shield, items: ["Alterar palavra-passe", "Autenticação de dois fatores", "2FA", "Sessões ativas", "Terminar sessão", "Eliminar conta"] },
+  { id: "avancadas", label: "Avançadas", icon: Cog, items: ["Versão", "Enviar feedback", "Exportar dados", "Termos de Serviço", "Política de Privacidade"] },
 ];
 
 export default function PTSettings() {
-  const [active, setActive] = useState("geral");
+  const [active, setActive] = useState<string | null>(null);
   const { setRole } = useDemo();
   const { signOut } = useAuth();
   const navigate = useNavigate();

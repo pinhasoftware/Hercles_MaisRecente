@@ -132,7 +132,7 @@ export default function PTClientNew() {
 
               <div className="mt-3 space-y-2">
                 <Label className="text-xs">Valor ({type === "presencial" ? "€/sessão" : "€/mês"})</Label>
-                <Input type="number" inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} placeholder="0" className="h-11 rounded-xl" />
+                <Input type="number" inputMode="decimal" value={value} onChange={(e) => setValue(e.target.value)} placeholder="0" className="no-spinner h-11 rounded-xl" />
               </div>
             </Section>
 
@@ -206,6 +206,8 @@ export default function PTClientNew() {
                         <span className="grid h-10 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-xs font-bold text-primary">{d}</span>
                         <Input
                           type="time"
+                          lang="pt-PT"
+                          step={60}
                           value={dayTimes[d] ?? ""}
                           onChange={(e) => setDayTimes((t) => ({ ...t, [d]: e.target.value }))}
                           className="h-10 min-w-[160px] flex-1 rounded-lg text-base"
@@ -269,7 +271,7 @@ export default function PTClientNew() {
                   max={30}
                   value={overdueDays}
                   onChange={(e) => setOverdueDays(e.target.value)}
-                  className="h-11 rounded-xl"
+                  className="no-spinner h-11 rounded-xl"
                 />
                 <p className="text-[10px] text-muted-foreground">
                   Se o aluno não pagar até X dias após a data limite, recebe uma push notification. Default: 3 dias.
