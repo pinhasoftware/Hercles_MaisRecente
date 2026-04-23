@@ -129,12 +129,18 @@ export default function PTClients() {
               {eventsForDay.map((s) => {
                 const c = clientById(s.client_id);
                 return (
-                  <li key={s.id} className="glass flex items-center gap-3 rounded-2xl p-3">
-                    <UserAvatar name={c?.full_name} src={c?.avatar_url} size="md" />
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-semibold">{c?.full_name}</p>
-                      <p className="text-xs capitalize text-muted-foreground">{s.type} · {format(new Date(s.scheduled_at), "HH:mm")}</p>
-                    </div>
+                  <li key={s.id}>
+                    <Link
+                      to={c ? `/pt/clients/${c.id}` : "#"}
+                      className="glass flex items-center gap-3 rounded-2xl p-3 transition-colors hover:bg-secondary/50"
+                    >
+                      <UserAvatar name={c?.full_name} src={c?.avatar_url} size="md" />
+                      <div className="flex-1 min-w-0">
+                        <p className="truncate text-sm font-semibold">{c?.full_name}</p>
+                        <p className="text-xs capitalize text-muted-foreground">{s.type} · {format(new Date(s.scheduled_at), "HH:mm")}</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </Link>
                   </li>
                 );
               })}
