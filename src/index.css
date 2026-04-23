@@ -168,5 +168,20 @@
     cursor: pointer;
     opacity: 0.7;
   }
+  /* Force 24h on native time inputs (no AM/PM) */
+  input[type="time"]::-webkit-datetime-edit-ampm-field {
+    display: none;
+  }
+
+  /* Hide number input spinners */
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .no-spinner {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 }
 
