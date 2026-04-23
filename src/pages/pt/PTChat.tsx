@@ -1,29 +1,253 @@
-import { Send } from "lucide-react";
-import { mockChats, mockClients } from "@/lib/mocks";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { ArrowLeft, Send, Sparkles, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { initials } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { mockClients, mockChats, clientById, type MockChatMessage, type MockClient } from "@/lib/mocks";
+
+const SUGGESTIONS_BANK: Record<string, string[]> = {
+  default: [
+    "Sem stress 💪 vamos compensar na próxima sessão.",
+    "Combinado! Confirmas o horário por aqui?",
+    "Boa! Lembra-te de descansar bem entre séries.",
+  ],
+  c1: [
+    "Perfeito Ana, 10h marcada ✅",
+    "Muito bem! Continua assim 🔥",
+    "Claro, sem problema. Avisa-me se mudar algo.",
+  ],
+  c2: [
+    "Sem problema. Faz 30 min de cardio moderado em vez de pernas.",
+    "Os DOMS são normais nas primeiras semanas. Hidrata bem!",
+    "Hoje descansa. Amanhã retomamos com pernas leves.",
+  ],
+};
 
 export default function PTChat() {
+  const { clientId } = useParams();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [chatStore, setChatStore] = useState<MockChatMessage[]>(() => [...mockChats]);
+
+  const threads = useMemo(() => {
+    const lastByClient = new Map<string, MockChatMessage>();
+    const unreadByClient = new Map<string, number>();
+    for (const m of [...chatStore].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at))) {
+      if (!lastByClient.has(m.client_id)) lastByClient.set(m.client_id, m);
+      if (m.sender_role === "client" && !m.read) {
+        unreadByClient.set(m.client_id, (unreadByClient.get(m.client_id) ?? 0) + 1);
+      }
+    }
+    return mockClients
+      .filter((c) => c.full_name.toLowerCase().includes(search.toLowerCase()))
+      .map((c) => ({ client: c, last: lastByClient.get(c.id), unread: unreadByClient.get(c.id) ?? 0 }))
+      .sort((a, b) => {
+        const da = a.last ? +new Date(a.last.created_at) : 0;
+        const db = b.last ? +new Date(b.last.created_at) : 0;
+        return db - da;
+      });
+  }, [chatStore, search]);
+
+  if (clientId) {
+    const client = clientById(clientId);
+    return <ChatThread client={client} chatStore={chatStore} setChatStore={setChatStore} onBack={() => navigate("/pt/chat")} />;
+  }
+
   return (
-    <div className="flex min-h-full flex-col px-5 pb-6 pt-6">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Mensagens</p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight">Chat</h1>
-      </header>
-      <section className="mt-6 flex-1 space-y-3">
-        {mockChats.map((message) => {
-          const client = mockClients.find((item) => item.id === message.client_id)!;
-          const fromClient = message.sender_role === "client";
-          return (
-            <article key={message.id} className={`max-w-[86%] rounded-2xl p-3 ${fromClient ? "glass" : "ml-auto bg-primary text-primary-foreground"}`}>
-              <p className="mb-1 text-[10px] font-bold uppercase opacity-70">{fromClient ? client.full_name : "PT"}</p>
-              <p className="text-sm">{message.content}</p>
-            </article>
-          );
-        })}
-      </section>
-      <div className="glass mt-4 flex items-center gap-2 rounded-2xl p-2">
-        <div className="flex-1 px-3 text-sm text-muted-foreground">Escrever mensagem...</div>
-        <Button size="icon" className="rounded-xl"><Send className="h-4 w-4" /></Button>
+    <div className="px-5 pb-24 pt-6">
+      <h1 className="text-2xl font-bold tracking-tight">Chat</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{mockClients.length} clientes</p>
+
+      <Input
+        placeholder="Procurar cliente…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="mt-4 rounded-2xl"
+      />
+
+      <div className="mt-4 space-y-2">
+        {threads.length === 0 && (
+          <div className="glass rounded-2xl p-6 text-center text-sm text-muted-foreground">
+            <MessageCircle className="mx-auto mb-2 h-6 w-6 opacity-50" />
+            Sem resultados.
+          </div>
+        )}
+        {threads.map((t) => (
+          <Link
+            key={t.client.id}
+            to={`/pt/chat/${t.client.id}`}
+            className="glass flex items-center gap-3 rounded-2xl p-3 transition-colors hover:bg-secondary/40"
+          >
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-secondary text-sm font-semibold">
+              {initials(t.client.full_name)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="truncate text-sm font-semibold">{t.client.full_name}</p>
+                {t.last && (
+                  <span className="shrink-0 text-[10px] text-muted-foreground">
+                    {new Date(t.last.created_at).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                )}
+              </div>
+              <p className="truncate text-xs text-muted-foreground">{t.last?.content ?? "Sem mensagens ainda"}</p>
+            </div>
+            {t.unread > 0 && (
+              <span className="grid h-6 min-w-6 place-items-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                {t.unread}
+              </span>
+            )}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ChatThread({
+  client, chatStore, setChatStore, onBack,
+}: {
+  client?: MockClient;
+  chatStore: MockChatMessage[];
+  setChatStore: React.Dispatch<React.SetStateAction<MockChatMessage[]>>;
+  onBack: () => void;
+}) {
+  const messages = useMemo(
+    () => chatStore.filter((m) => m.client_id === client?.id).sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)),
+    [chatStore, client],
+  );
+  const [input, setInput] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  function suggest() {
+    if (!client) return;
+    setSuggestions(SUGGESTIONS_BANK[client.id] ?? SUGGESTIONS_BANK.default);
+  }
+
+  function send(text: string) {
+    if (!client) return;
+    const t = text.trim();
+    if (!t) return;
+    setSuggestions([]);
+    setChatStore((prev) => [
+      ...prev,
+      {
+        id: `tmp-${Date.now()}`,
+        client_id: client.id,
+        sender_role: "trainer",
+        content: t,
+        created_at: new Date().toISOString(),
+        read: true,
+      },
+    ]);
+    setInput("");
+  }
+
+  if (!client) {
+    return (
+      <div className="px-5 pt-6">
+        <button onClick={onBack} className="text-sm text-muted-foreground">← Voltar</button>
+        <p className="mt-4 text-sm">Cliente não encontrado.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-[calc(100vh-5rem)] flex-col">
+      <div className="flex items-center gap-3 border-b border-border/60 bg-background/85 px-4 py-3 backdrop-blur-xl">
+        <button onClick={onBack} className="grid h-9 w-9 place-items-center rounded-full hover:bg-secondary">
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <div className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-sm font-semibold">
+          {initials(client.full_name)}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold">{client.full_name}</p>
+          <p className="text-[11px] text-muted-foreground capitalize">{client.type}</p>
+        </div>
+      </div>
+
+      <ScrollArea className="flex-1 px-4" ref={scrollRef as never}>
+        <div className="space-y-2 py-4">
+          {messages.length === 0 && (
+            <p className="py-12 text-center text-xs text-muted-foreground">Sem mensagens. Envia a primeira!</p>
+          )}
+          {messages.map((m) => (
+            <div key={m.id} className={cn("flex", m.sender_role === "trainer" ? "justify-end" : "justify-start")}>
+              <div
+                className={cn(
+                  "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                  m.sender_role === "trainer"
+                    ? "rounded-br-sm bg-primary text-primary-foreground"
+                    : "glass rounded-bl-sm",
+                )}
+              >
+                <p className="whitespace-pre-wrap">{m.content}</p>
+                <p className={cn("mt-0.5 text-[9px] opacity-60", m.sender_role === "trainer" && "text-right")}>
+                  {new Date(m.created_at).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+
+      {suggestions.length > 0 && (
+        <div className="border-t border-border/60 bg-background/85 px-3 py-2 backdrop-blur-xl">
+          <div className="mb-1 flex items-center gap-1.5">
+            <Sparkles className="h-3 w-3 text-accent" />
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">Sugestões IA</span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setInput(s)}
+                className="ai-border glass relative shrink-0 max-w-[260px] rounded-xl px-3 py-2 text-left text-xs hover:bg-accent/10"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="border-t border-border/60 bg-background/85 px-3 py-2.5 backdrop-blur-xl safe-bottom">
+        <div className="flex items-end gap-2">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={suggest}
+            className="h-10 w-10 shrink-0 rounded-full text-accent hover:bg-accent/10"
+            aria-label="Sugestões IA"
+          >
+            <Sparkles className="h-4 w-4" />
+          </Button>
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send(input);
+              }
+            }}
+            placeholder="Mensagem…"
+            className="min-h-[40px] max-h-32 resize-none rounded-2xl"
+          />
+          <Button size="icon" onClick={() => send(input)} disabled={!input.trim()} className="h-10 w-10 shrink-0 rounded-full">
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
