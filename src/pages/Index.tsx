@@ -1,76 +1,79 @@
-import { ArrowRight, Dumbbell, Sparkles, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useDemo } from "@/contexts/DemoContext";
+import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Sparkles, Users, Dumbbell, ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
+  const { user, role, loading } = useAuth();
   const navigate = useNavigate();
-  const { setRole } = useDemo();
 
-  const enterApp = (role: "trainer" | "client") => {
-    setRole(role);
-    navigate(role === "trainer" ? "/pt" : "/app");
-  };
+  useEffect(() => {
+    if (loading) return;
+    if (user && role) navigate(role === "trainer" ? "/pt" : "/app", { replace: true });
+  }, [user, role, loading, navigate]);
 
   return (
-    <main className="relative mx-auto flex min-h-screen max-w-md flex-col overflow-hidden bg-background px-5 py-6 text-foreground">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-glow" />
+    <div className="relative mx-auto min-h-screen max-w-md overflow-hidden bg-gradient-hero">
+      <title>FitPilot — O copilot inteligente de Personal Trainers</title>
+      <meta name="description" content="App PWA para personal trainers e clientes. Treinos, calendário, chat, nutrição e Pilot AI." />
 
-      <section className="relative flex flex-1 flex-col justify-between gap-8">
-        <div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-glow">
-                <Dumbbell className="h-5 w-5" />
-              </div>
-              <p className="text-lg font-black tracking-tight">FitPilot</p>
-            </div>
-            <div className="rounded-full border border-border/70 bg-secondary px-3 py-1 text-[11px] font-bold uppercase text-muted-foreground">
-              Demo
-            </div>
-          </div>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-glow" />
+      <div className="pointer-events-none absolute -right-20 top-40 h-72 w-72 rounded-full bg-accent/15 blur-3xl" />
 
-          <div className="mt-14">
-            <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> Plataforma PT
-            </p>
-            <h1 className="text-5xl font-black leading-[0.95] tracking-tight">
-              Gestão de treino com energia de app premium.
-            </h1>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-muted-foreground">
-              Entra como personal trainer ou cliente para veres dashboards, treinos, chat, progresso e faturação.
-            </p>
+      <div className="relative flex min-h-screen flex-col px-6 pb-10 pt-16">
+        <div className="mb-10 flex items-center gap-2">
+          <div className="grid h-10 w-10 place-items-center rounded-xl shadow-glow" style={{ background: "var(--gradient-primary)" }}>
+            <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
+          <span className="text-lg font-bold tracking-tight">FitPilot</span>
         </div>
 
-        <div className="space-y-3 pb-4">
-          <button
-            type="button"
-            onClick={() => enterApp("trainer")}
-            className="glass-strong flex w-full items-center justify-between rounded-3xl p-4 text-left transition-transform active:scale-[0.98]"
-          >
-            <span className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/15 text-primary">
-                <Users className="h-6 w-6" />
-              </span>
-              <span>
-                <span className="block text-base font-bold">Entrar como PT</span>
-                <span className="block text-xs text-muted-foreground">Clientes, IA, chat e negócio</span>
-              </span>
-            </span>
-            <ArrowRight className="h-5 w-5 text-primary" />
-          </button>
+        <h1 className="text-4xl font-black leading-[1.05] tracking-tight">
+          O teu <span className="gradient-text-primary">copilot</span><br />de PT.
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Gere clientes, treinos, faturação e nutrição num só sítio — com Pilot AI sempre a um toque.
+        </p>
 
-          <Button
-            type="button"
-            onClick={() => enterApp("client")}
-            className="h-14 w-full rounded-2xl bg-gradient-primary text-base font-black text-primary-foreground shadow-glow"
-          >
-            Entrar como cliente
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+        <div className="mt-10 space-y-3">
+          <Feature icon={Users} title="Para PTs" desc="Calendário, fichas de cliente, faturação, AI." />
+          <Feature icon={Dumbbell} title="Para alunos" desc="Treino com timer, chat, nutrição, progresso." />
         </div>
-      </section>
-    </main>
+
+        <div className="mt-10">
+          <Link
+            to="/auth"
+            className="group relative flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-primary text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90"
+          >
+            Entrar
+            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            Ainda sem conta?{" "}
+            <Link to="/auth" className="font-semibold text-foreground underline-offset-4 hover:underline">
+              Criar conta de PT
+            </Link>
+          </p>
+        </div>
+
+        <p className="mt-auto pt-10 text-center text-[11px] text-muted-foreground">
+          v1.0 · feito em Portugal 🇵🇹
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function Feature({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) {
+  return (
+    <div className="flex items-center gap-4 rounded-2xl border border-border/60 bg-card/60 p-4 backdrop-blur">
+      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-secondary">
+        <Icon className="h-6 w-6 text-foreground" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-base font-bold">{title}</p>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+    </div>
   );
 }
