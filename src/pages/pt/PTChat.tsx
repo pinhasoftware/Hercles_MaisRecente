@@ -42,9 +42,10 @@ export default function PTChat() {
       return [];
     }
   });
+  const [showAddSheet, setShowAddSheet] = useState(false);
 
   useEffect(() => {
-    try { localStorage.setItem(ADDED_KEY, JSON.stringify(addedIds)); } catch {/* noop */}
+    try { localStorage.setItem(ADDED_KEY, JSON.stringify(addedIds)); } catch { /* noop */ }
   }, [addedIds]);
 
   function addClient(id: string) {
@@ -72,16 +73,27 @@ export default function PTChat() {
       });
   }, [chatStore, addedIds]);
 
-  // Resultados de pesquisa para adicionar (apenas clientes ainda não adicionados)
-  const searchResults = useMemo(() => {
-    const q = search.trim().toLowerCase();
+  const q = search.trim().toLowerCase();
+
+  // Contactos novos para adicionar (apenas alunos ainda não adicionados que combinem com q).
+  const contactsToAdd = useMemo(() => {
     if (!q) return [];
     return mockClients.filter(
       (c) => !addedIds.includes(c.id) && c.full_name.toLowerCase().includes(q),
     );
-  }, [search, addedIds]);
+  }, [q, addedIds]);
 
-  const [showAddSheet, setShowAddSheet] = useState(false);
+  // Threads existentes que combinem com nome OU conteúdo de mensagens.
+  const matchingThreads = useMemo(() => {
+    if (!q) return threads;
+    return threads.filter((t) => {
+      const nameHit = t.client.full_name.toLowerCase().includes(q);
+      const msgHit = chatStore.some(
+        (m) => m.client_id === t.client.id && m.content.toLowerCase().includes(q),
+      );
+      return nameHit || msgHit;
+    });
+  }, [q, threads, chatStore]);
 
   if (clientId) {
     const client = clientById(clientId);
@@ -100,8 +112,7 @@ export default function PTChat() {
           className="flex h-10 items-center gap-1.5 rounded-xl bg-gradient-primary px-3.5 text-xs font-semibold text-primary-foreground shadow-glow"
           aria-label="Nova conversa"
         >
-          <MessageSquarePlus className="h-4 w-4" />
-          <Plus className="h-3 w-3" />
+          <MessageSquarePlus className="h-4 w-4" /> Novo
         </button>
       </div>
 
@@ -114,39 +125,76 @@ export default function PTChat() {
         />
       </div>
 
-      {/* Resultados de pesquisa para adicionar */}
-      {search.trim() && (
-        <div className="mt-3 space-y-1.5">
-          <p className="px-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Adicionar ao chat
-          </p>
-          {searchResults.length === 0 ? (
-            <p className="rounded-xl bg-secondary/40 p-4 text-center text-xs text-muted-foreground">
-              Nenhum aluno encontrado ou já adicionado.
+      {/* Quando há pesquisa: mostra primeiro contactos a adicionar e depois conversas que batem certo */}
+      {q && (
+        <div className="mt-3 space-y-4">
+          {contactsToAdd.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="px-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Adicionar ao chat
+              </p>
+              {contactsToAdd.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => addClient(c.id)}
+                  className="flex w-full items-center gap-3 rounded-xl bg-secondary/40 p-2.5 text-left hover:bg-secondary/70"
+                >
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary text-xs font-semibold">
+                    {initials(c.full_name)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{c.full_name}</p>
+                    <p className="text-[11px] capitalize text-muted-foreground">{c.type}</p>
+                  </div>
+                  <Plus className="h-4 w-4 text-primary" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {matchingThreads.length > 0 && (
+            <div className="space-y-2">
+              <p className="px-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Conversas</p>
+              {matchingThreads.map((t) => (
+                <Link
+                  key={t.client.id}
+                  to={`/pt/chat/${t.client.id}`}
+                  className="glass flex items-center gap-3 rounded-2xl p-3 transition-colors hover:bg-secondary/40"
+                >
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-secondary text-sm font-semibold">
+                    {initials(t.client.full_name)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <p className="truncate text-sm font-semibold">{t.client.full_name}</p>
+                      {t.last && (
+                        <span className="shrink-0 text-[10px] text-muted-foreground">
+                          {new Date(t.last.created_at).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      )}
+                    </div>
+                    <p className="truncate text-xs text-muted-foreground">{t.last?.content ?? "Sem mensagens ainda"}</p>
+                  </div>
+                  {t.unread > 0 && (
+                    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                      {t.unread}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {contactsToAdd.length === 0 && matchingThreads.length === 0 && (
+            <p className="rounded-xl bg-secondary/40 p-6 text-center text-xs text-muted-foreground">
+              Sem resultados para "{search}".
             </p>
-          ) : (
-            searchResults.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => addClient(c.id)}
-                className="flex w-full items-center gap-3 rounded-xl bg-secondary/40 p-2.5 text-left hover:bg-secondary/70"
-              >
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary text-xs font-semibold">
-                  {initials(c.full_name)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{c.full_name}</p>
-                  <p className="text-[11px] capitalize text-muted-foreground">{c.type}</p>
-                </div>
-                <Plus className="h-4 w-4 text-primary" />
-              </button>
-            ))
           )}
         </div>
       )}
 
-      {/* Folha "Nova conversa" — mostra todos os alunos não adicionados */}
-      {showAddSheet && !search.trim() && (
+      {/* Folha "Nova conversa" quando o utilizador carrega no botão Novo */}
+      {showAddSheet && !q && (
         <div className="mt-3 space-y-1.5 rounded-2xl border border-border/60 bg-secondary/20 p-3">
           <div className="flex items-center justify-between px-1 pb-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -176,14 +224,14 @@ export default function PTChat() {
         </div>
       )}
 
-      {/* Lista de conversas existentes */}
-      {!search.trim() && (
+      {/* Lista normal das conversas existentes */}
+      {!q && (
         <div className="mt-4 space-y-2">
           {threads.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">
               <MessageCircle className="mx-auto mb-2 h-8 w-8 opacity-50" />
               <p className="font-medium text-foreground">Sem conversas ainda</p>
-              <p className="mt-1 text-xs">Usa a barra de pesquisa ou o botão acima para adicionar um aluno ao chat.</p>
+              <p className="mt-1 text-xs">Usa a barra de pesquisa ou o botão "Novo" para adicionar um aluno ao chat.</p>
             </div>
           ) : (
             threads.map((t) => (
