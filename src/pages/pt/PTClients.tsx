@@ -1,17 +1,130 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { addDays, endOfWeek, format, isSameDay, startOfWeek, subDays } from "date-fns";
+import { addDays, endOfWeek, format, isSameDay, parse, startOfWeek, subDays } from "date-fns";
 import { pt } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Mic, Send, UserPlus, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { UserAvatar } from "@/components/UserAvatar";
 import { ClientCardMenu } from "@/components/pt/ClientCardMenu";
 import { cn } from "@/lib/utils";
-import { mockClients, mockSessions, clientById } from "@/lib/mocks";
+import { mockClients, mockSessions, clientById, type MockSession } from "@/lib/mocks";
 import { usePTUI } from "@/contexts/PTUIContext";
 
 const TABS = ["Calendário", "Todos", "Presencial", "Consultoria", "Atenção"] as const;
 type Tab = typeof TABS[number];
+
+const WEEKDAY_MAP: Record<string, number> = {
+  segunda: 1, "2a": 1, "2ª": 1, seg: 1,
+  terca: 2, terça: 2, ter: 2,
+  quarta: 3, qua: 3,
+  quinta: 4, qui: 4,
+  sexta: 5, sex: 5,
+  sabado: 6, sábado: 6, sab: 6, sáb: 6,
+  domingo: 0, dom: 0,
+};
+
+function stripAccents(s: string) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/**
+ * Mini-parser PT para alterações ao calendário via texto.
+ * Suporta exemplos:
+ *  - "marca treino com Ana sexta 10h"
+ *  - "agenda João amanhã 18:30"
+ *  - "cancela sessão de Mariana hoje"
+ *  - "remarca Ana de quinta para sexta 11h"
+ */
+function parseCalendarCommand(
+  text: string,
+  sessions: MockSession[],
+  weekStart: Date,
+): { action: "add" | "remove" | "move"; payload?: Partial<MockSession> & { id?: string; oldDay?: number; newDay?: number; newTime?: string }; message: string } | null {
+  const raw = stripAccents(text.trim().toLowerCase());
+  if (!raw) return null;
+
+  // Find a client mention by first/last name.
+  const client = mockClients.find((c) => {
+    const parts = stripAccents(c.full_name.toLowerCase()).split(" ");
+    return parts.some((p) => p.length > 2 && raw.includes(p));
+  });
+
+  // Find a time like "10h", "10h00", "10:30"
+  const timeMatch = raw.match(/(\d{1,2})\s*(?:h|:)\s*(\d{0,2})/);
+  const hour = timeMatch ? Math.min(23, parseInt(timeMatch[1], 10)) : null;
+  const minute = timeMatch && timeMatch[2] ? Math.min(59, parseInt(timeMatch[2], 10)) : 0;
+
+  // Find a day reference
+  let targetDate: Date | null = null;
+  if (/\bhoje\b/.test(raw)) targetDate = new Date();
+  else if (/\bamanha\b/.test(raw)) targetDate = addDays(new Date(), 1);
+  else {
+    for (const [k, idx] of Object.entries(WEEKDAY_MAP)) {
+      if (new RegExp(`\\b${k}\\b`).test(raw)) {
+        // Map Sunday=0 to a Monday-week offset (Mon=0 .. Sun=6)
+        const offset = (idx + 6) % 7;
+        targetDate = addDays(weekStart, offset);
+        break;
+      }
+    }
+  }
+
+  // Cancellation
+  if (/\bcancel|remov|apag|elimin/.test(raw)) {
+    if (!client) return { action: "remove", message: "Diz qual o cliente da sessão a cancelar." };
+    const candidate = sessions.find((s) => {
+      if (s.client_id !== client.id) return false;
+      if (targetDate) return isSameDay(new Date(s.scheduled_at), targetDate);
+      return true;
+    });
+    if (!candidate) return { action: "remove", message: `Não encontrei sessão de ${client.full_name} para cancelar.` };
+    return {
+      action: "remove",
+      payload: { id: candidate.id },
+      message: `Sessão de ${client.full_name} cancelada.`,
+    };
+  }
+
+  // Reschedule
+  if (/\bremarc|move|muda/.test(raw)) {
+    if (!client || !targetDate) return { action: "move", message: "Indica o cliente e o novo dia/hora." };
+    const candidate = sessions.find((s) => s.client_id === client.id);
+    if (!candidate) return { action: "move", message: `Sem sessões de ${client.full_name} para remarcar.` };
+    const next = new Date(targetDate);
+    if (hour !== null) next.setHours(hour, minute, 0, 0);
+    else {
+      const old = new Date(candidate.scheduled_at);
+      next.setHours(old.getHours(), old.getMinutes(), 0, 0);
+    }
+    return {
+      action: "move",
+      payload: { id: candidate.id, scheduled_at: next.toISOString() },
+      message: `Sessão de ${client.full_name} remarcada para ${format(next, "EEEE d 'às' HH:mm", { locale: pt })}.`,
+    };
+  }
+
+  // Add
+  if (/\bmarca|agenda|adicion|cria/.test(raw)) {
+    if (!client) return { action: "add", message: "Diz com que cliente é a sessão." };
+    if (!targetDate) return { action: "add", message: "Indica o dia (hoje, amanhã, sexta...)." };
+    const dt = new Date(targetDate);
+    dt.setHours(hour ?? 10, minute, 0, 0);
+    return {
+      action: "add",
+      payload: {
+        client_id: client.id,
+        scheduled_at: dt.toISOString(),
+        duration_min: 60,
+        type: client.type,
+        status: "agendado",
+        paid: false,
+      },
+      message: `Sessão com ${client.full_name} marcada para ${format(dt, "EEEE d 'às' HH:mm", { locale: pt })}.`,
+    };
+  }
+
+  return null;
+}
 
 export default function PTClients() {
   const { clientsTab, setClientsTab, setLastClientId } = usePTUI();
@@ -21,9 +134,8 @@ export default function PTClients() {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [aiInput, setAiInput] = useState("");
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
+  const [sessions, setSessions] = useState<MockSession[]>(() => [...mockSessions]);
 
-  // Landing on the list itself clears any "last opened client" so the
-  // bottom-nav Clientes button stops deep-linking back into a profile.
   useEffect(() => {
     setLastClientId(null);
   }, [setLastClientId]);
@@ -33,14 +145,14 @@ export default function PTClients() {
   const weekSessions = useMemo(() => {
     const from = weekStart;
     const to = endOfWeek(weekStart, { weekStartsOn: 1 });
-    return mockSessions.filter((s) => {
+    return sessions.filter((s) => {
       const d = new Date(s.scheduled_at);
       return d >= from && d <= to;
     });
-  }, [weekStart]);
+  }, [weekStart, sessions]);
 
   const sessionsBy = useMemo(() => {
-    const map: Record<string, typeof mockSessions> = {};
+    const map: Record<string, MockSession[]> = {};
     weekSessions.forEach((s) => {
       const k = format(new Date(s.scheduled_at), "yyyy-MM-dd");
       (map[k] ??= []).push(s);
@@ -59,6 +171,44 @@ export default function PTClients() {
     if (tab === "Atenção") return visible.filter((c) => c.status === "atencao");
     return visible;
   }, [tab, deletedIds]);
+
+  function executeAI() {
+    const result = parseCalendarCommand(aiInput, sessions, weekStart);
+    if (!result) {
+      toast.error("Não percebi o pedido. Ex: 'marca treino com Ana sexta 10h'.");
+      return;
+    }
+    if (!result.payload) {
+      toast.error(result.message);
+      return;
+    }
+    if (result.action === "add" && result.payload.scheduled_at && result.payload.client_id) {
+      const newSession: MockSession = {
+        id: `ai-${Date.now()}`,
+        client_id: result.payload.client_id,
+        scheduled_at: result.payload.scheduled_at,
+        duration_min: result.payload.duration_min ?? 60,
+        type: result.payload.type ?? "presencial",
+        status: result.payload.status ?? "agendado",
+        paid: result.payload.paid ?? false,
+      };
+      setSessions((prev) => [...prev, newSession]);
+      setSelectedDay(new Date(newSession.scheduled_at));
+      toast.success(result.message, { id: "ai-cal" });
+    } else if (result.action === "remove" && result.payload.id) {
+      setSessions((prev) => prev.filter((s) => s.id !== result.payload!.id));
+      toast.success(result.message, { id: "ai-cal" });
+    } else if (result.action === "move" && result.payload.id && result.payload.scheduled_at) {
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.id === result.payload!.id ? { ...s, scheduled_at: result.payload!.scheduled_at! } : s,
+        ),
+      );
+      setSelectedDay(new Date(result.payload.scheduled_at));
+      toast.success(result.message, { id: "ai-cal" });
+    }
+    setAiInput("");
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -86,7 +236,7 @@ export default function PTClients() {
       </header>
 
       {tab === "Calendário" ? (
-        <section className="flex-1 px-5 pt-3">
+        <section className="flex-1 px-5 pt-3 pb-32">
           <div className="glass rounded-2xl p-4">
             <div className="mb-3 flex items-center justify-between">
               <button onClick={() => setWeekStart(subDays(weekStart, 7))} className="grid h-8 w-8 place-items-center rounded-lg bg-secondary"><ChevronLeft className="h-4 w-4" /></button>
@@ -147,16 +297,18 @@ export default function PTClients() {
             </ul>
           )}
 
-          <div className="sticky bottom-24 mt-6 pb-2">
-            <div className="glass-strong flex items-center gap-2 rounded-full p-1.5 shadow-card">
+          {/* Barra de comando AI fixa no fundo, acima da bottom-nav (h-16 ≈ 4rem) */}
+          <div className="pointer-events-none fixed inset-x-0 bottom-20 z-20 mx-auto max-w-md px-5">
+            <div className="pointer-events-auto glass-strong flex items-center gap-2 rounded-full p-1.5 shadow-card">
               <input
                 value={aiInput}
                 onChange={(e) => setAiInput(e.target.value)}
-                placeholder="Ditar/escrever alteração ao calendário..."
+                onKeyDown={(e) => { if (e.key === "Enter") executeAI(); }}
+                placeholder="Ex: marca treino com Ana sexta 10h"
                 className="flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
               />
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-muted-foreground"><Mic className="h-4 w-4" /></button>
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-gradient-ai text-accent-foreground shadow-ai"><Send className="h-4 w-4" /></button>
+              <button className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-muted-foreground" aria-label="Ditar"><Mic className="h-4 w-4" /></button>
+              <button onClick={executeAI} className="grid h-9 w-9 place-items-center rounded-full bg-gradient-ai text-accent-foreground shadow-ai" aria-label="Enviar"><Send className="h-4 w-4" /></button>
             </div>
           </div>
         </section>
