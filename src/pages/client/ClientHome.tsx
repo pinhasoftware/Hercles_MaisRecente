@@ -8,7 +8,6 @@ import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { greetingPT } from "@/lib/format";
 import { Progress } from "@/components/ui/progress";
-import { useDemo } from "@/contexts/DemoContext";
 import { Button } from "@/components/ui/button";
 import { NotificationsBell, type NotificationItem } from "@/components/NotificationsBell";
 
