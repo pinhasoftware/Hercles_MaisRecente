@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { User, Dumbbell, Bell, Calendar, Users, Wallet, Palette, Plug, Shield, Cog, Settings as SettingsIcon, LogOut } from "lucide-react";
 import { SettingsLayout, type SettingsSection } from "@/components/SettingsLayout";
 import { useDemo } from "@/contexts/DemoContext";
@@ -31,8 +31,17 @@ export default function PTSettings() {
   const { setRole } = useDemo();
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  function handleSave() { toast.success("Definições guardadas"); }
+  // Deep-link via #hash → abre a secção indicada (ex: #seguranca).
+  useEffect(() => {
+    const id = location.hash.replace("#", "");
+    if (id && SECTIONS.some((s) => s.id === id)) setActive(id);
+  }, [location.hash]);
+
+  function handleSave() {
+    toast.success("Definições guardadas", { id: "settings-saved" });
+  }
 
   async function handleLogout() {
     setRole(null);

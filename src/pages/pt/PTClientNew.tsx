@@ -315,6 +315,7 @@ export default function PTClientNew() {
               </p>
             </div>
 
+          <div className="sticky bottom-20 z-20 -mx-5 mt-6 border-t border-border/40 bg-background/90 px-5 py-3 backdrop-blur-xl">
             <Button
               onClick={createClient}
               disabled={!name.trim()}
@@ -322,6 +323,7 @@ export default function PTClientNew() {
             >
               Criar cliente
             </Button>
+          </div>
           </div>
         </>
       ) : (

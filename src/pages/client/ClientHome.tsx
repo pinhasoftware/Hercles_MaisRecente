@@ -1,17 +1,30 @@
 import { Link } from "react-router-dom";
-import { Flame, Calendar, Trophy, ChevronRight, Dumbbell, Zap, Settings as SettingsIcon, ClipboardList } from "lucide-react";
+import {
+  Flame, Calendar, Trophy, ChevronRight, Dumbbell, Zap, Settings as SettingsIcon, ClipboardList,
+  CreditCard, Apple, MessageCircle, Activity, Trophy as TrophyIcon, ShieldCheck, Sparkles,
+} from "lucide-react";
 import { mockClientStats, mockSessions, mockWorkouts, clientById } from "@/lib/mocks";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { greetingPT } from "@/lib/format";
 import { Progress } from "@/components/ui/progress";
-import { useDemo } from "@/contexts/DemoContext";
 import { Button } from "@/components/ui/button";
+import { NotificationsBell, type NotificationItem } from "@/components/NotificationsBell";
 
 const ME = clientById("c1")!;
 
+const CLIENT_NOTIFICATIONS: NotificationItem[] = [
+  { id: "cn1", icon: CreditCard, text: "Lembrete: pagamento da próxima sessão é amanhã.", to: "/app/settings#pagamentos", unread: true },
+  { id: "cn2", icon: Dumbbell, text: "O teu PT atualizou o teu plano de treino.", to: "/app/workout", unread: true },
+  { id: "cn3", icon: Apple, text: "Nova dica nutricional do teu PT.", to: "/app/nutrition", unread: true },
+  { id: "cn4", icon: MessageCircle, text: "O teu PT respondeu à tua mensagem.", to: "/app/chat" },
+  { id: "cn5", icon: Activity, text: "Check-in semanal disponível.", to: "/app/progress" },
+  { id: "cn6", icon: TrophyIcon, text: "Novo recorde pessoal — supino 43,5 kg!", to: "/app/progress" },
+  { id: "cn7", icon: ShieldCheck, text: "Protege a tua conta — ativa 2FA.", to: "/app/settings#seguranca" },
+  { id: "cn8", icon: Sparkles, text: "Sugestão da Pilot AI: hidrata-te antes do treino!" },
+];
+
 export default function ClientHome() {
-  const { setRole } = useDemo();
   const upcoming = mockSessions
     .filter((s) => s.client_id === ME.id && new Date(s.scheduled_at) >= new Date(new Date().setHours(0, 0, 0, 0)))
     .sort((a, b) => +new Date(a.scheduled_at) - +new Date(b.scheduled_at))
@@ -28,13 +41,7 @@ export default function ClientHome() {
           <h1 className="text-2xl font-bold tracking-tight">{ME.full_name.split(" ")[0]} 🔥</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setRole(null)}
-            className="grid h-10 w-10 place-items-center rounded-xl bg-secondary text-xs font-bold"
-            aria-label="Trocar perfil"
-          >
-            {ME.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-          </button>
+          <NotificationsBell items={CLIENT_NOTIFICATIONS} />
           <Link to="/app/settings" className="grid h-10 w-10 place-items-center rounded-xl bg-secondary" aria-label="Definições">
             <SettingsIcon className="h-5 w-5" />
           </Link>
