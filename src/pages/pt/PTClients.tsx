@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { addDays, endOfWeek, format, isSameDay, parse, startOfWeek, subDays } from "date-fns";
+import { addDays, endOfWeek, format, isSameDay, startOfWeek, subDays } from "date-fns";
 import { pt } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Mic, Send, UserPlus, Link2 } from "lucide-react";
 import { toast } from "sonner";
