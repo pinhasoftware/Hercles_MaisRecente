@@ -50,28 +50,27 @@ export default function ClientNutrition() {
           </TabsTrigger>
         </TabsList>
 
-        {/* TAB 1: simples — só dicas do PT */}
+        {/* TAB 1: dicas — lista minimalista, escalável e com scroll quando muitas */}
         <TabsContent value="simples" className="mt-5 space-y-3">
-          <div className="ai-border relative rounded-3xl bg-accent/5 p-5">
-            <div className="flex items-center gap-2">
-              <Lightbulb className="h-4 w-4 text-accent" />
-              <h2 className="text-sm font-bold uppercase tracking-wider gradient-text-ai">Dicas do teu PT</h2>
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Sem contas, sem stress. Foca-te nestes princípios e estás no caminho certo.
-            </p>
+          <div className="flex items-center gap-2 px-1">
+            <Lightbulb className="h-4 w-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Dicas do teu PT</h2>
           </div>
 
-          <ul className="space-y-2">
-            {ptTips.map((tip, i) => (
-              <li key={i} className="glass flex items-start gap-3 rounded-2xl p-4">
-                <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                  {i + 1}
-                </div>
-                <p className="text-sm leading-relaxed">{tip}</p>
-              </li>
-            ))}
-          </ul>
+          {ptTips.length === 0 ? (
+            <p className="rounded-xl bg-secondary/30 p-4 text-center text-xs text-muted-foreground">
+              O teu PT ainda não definiu dicas para esta semana.
+            </p>
+          ) : (
+            <ul className="max-h-[60vh] divide-y divide-border/60 overflow-y-auto rounded-xl">
+              {ptTips.map((tip, i) => (
+                <li key={i} className="flex items-start gap-3 px-1 py-3">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={3} />
+                  <p className="text-sm leading-relaxed">{tip}</p>
+                </li>
+              ))}
+            </ul>
+          )}
 
           <p className="mt-4 rounded-2xl bg-secondary/40 p-3 text-center text-[11px] text-muted-foreground">
             💬 Dúvidas sobre alimentação? Fala com o teu PT no chat.
