@@ -170,6 +170,9 @@ export const mockChats: MockChatMessage[] = [
   { id: "m5", client_id: "c3", sender_role: "trainer", content: "Olá Mariana, está tudo bem? Não te vi nas últimas sessões.", created_at: addHours(today, -26).toISOString(), read: true },
 ];
 
+// Public domain demo video used for all exercises until real videos are uploaded by the PT.
+const DEMO_VIDEO = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+
 export const mockWorkouts: MockWorkout[] = [
   {
     id: "w1",
@@ -177,10 +180,10 @@ export const mockWorkouts: MockWorkout[] = [
     name: "Full Body A",
     day: "Segunda",
     exercises: [
-      { id: "e1", name: "Agachamento", sets: 4, reps: "8-10", weight_kg: 50, rest_s: 90 },
-      { id: "e2", name: "Supino plano", sets: 4, reps: "8-10", weight_kg: 35, rest_s: 90, group: "A" },
-      { id: "e3", name: "Remada curvada", sets: 4, reps: "10", weight_kg: 30, rest_s: 90, group: "A" },
-      { id: "e4", name: "Prancha", sets: 3, reps: "—", weight_kg: null, rest_s: 45, mode: "time", duration_s: 45 },
+      { id: "e1", name: "Agachamento", sets: 4, reps: "8-10", weight_kg: 50, rest_s: 90, video_url: DEMO_VIDEO },
+      { id: "e2", name: "Supino plano", sets: 4, reps: "8-10", weight_kg: 35, rest_s: 90, group: "A", video_url: DEMO_VIDEO },
+      { id: "e3", name: "Remada curvada", sets: 4, reps: "10", weight_kg: 30, rest_s: 90, group: "A", video_url: DEMO_VIDEO },
+      { id: "e4", name: "Prancha", sets: 3, reps: "—", weight_kg: null, rest_s: 45, mode: "time", duration_s: 45, video_url: DEMO_VIDEO },
     ],
   },
   {
@@ -189,9 +192,9 @@ export const mockWorkouts: MockWorkout[] = [
     name: "Full Body B",
     day: "Quarta",
     exercises: [
-      { id: "e5", name: "Peso morto romeno", sets: 4, reps: "8", weight_kg: 60, rest_s: 120 },
-      { id: "e6", name: "Press militar", sets: 3, reps: "10", weight_kg: 20, rest_s: 75 },
-      { id: "e7", name: "Lunges", sets: 3, reps: "12 cada", weight_kg: 12, rest_s: 60 },
+      { id: "e5", name: "Peso morto romeno", sets: 4, reps: "8", weight_kg: 60, rest_s: 120, video_url: DEMO_VIDEO },
+      { id: "e6", name: "Press militar", sets: 3, reps: "10", weight_kg: 20, rest_s: 75, video_url: DEMO_VIDEO },
+      { id: "e7", name: "Lunges", sets: 3, reps: "12 cada", weight_kg: 12, rest_s: 60, video_url: DEMO_VIDEO },
     ],
   },
 ];
