@@ -25,7 +25,6 @@ const CLIENT_NOTIFICATIONS: NotificationItem[] = [
 ];
 
 export default function ClientHome() {
-  const { setRole } = useDemo();
   const upcoming = mockSessions
     .filter((s) => s.client_id === ME.id && new Date(s.scheduled_at) >= new Date(new Date().setHours(0, 0, 0, 0)))
     .sort((a, b) => +new Date(a.scheduled_at) - +new Date(b.scheduled_at))
