@@ -55,19 +55,14 @@ export default function PTAI() {
 
   return (
     <div className="flex h-[calc(100vh-5rem)] flex-col px-5 pt-6">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl shadow-[var(--shadow-ai)]" style={{ background: "var(--gradient-ai)" }}>
-            <Sparkles className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Pilot AI</h1>
-            <p className="text-[11px] text-muted-foreground">O teu copilot de treino · demo</p>
-          </div>
+      <div className="mb-4 flex items-center gap-3">
+        <div className="grid h-10 w-10 place-items-center rounded-xl shadow-[var(--shadow-ai)]" style={{ background: "var(--gradient-ai)" }}>
+          <Sparkles className="h-5 w-5 text-white" />
         </div>
-        <Button variant="ghost" size="icon" onClick={() => setMessages([])} aria-label="Nova conversa">
-          <Plus className="h-5 w-5" />
-        </Button>
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Pilot AI</h1>
+          <p className="text-[11px] text-muted-foreground">O teu copilot de treino · demo</p>
+        </div>
       </div>
 
       <ScrollArea className="flex-1" ref={scrollRef as never}>
