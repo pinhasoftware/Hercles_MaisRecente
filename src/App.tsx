@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DemoProvider } from "@/contexts/DemoContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PTUIProvider } from "@/contexts/PTUIContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PTLayout } from "@/components/pt/PTLayout";
 import { ClientLayout } from "@/components/client/ClientLayout";
