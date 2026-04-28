@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useTheme, type ThemeMode } from "@/contexts/ThemeContext";
 
 const SECTIONS: SettingsSection[] = [
   { id: "geral", label: "Geral", icon: SettingsIcon, items: ["Idioma", "Fuso horário", "Formato de data", "Moeda", "Unidade de peso"] },
@@ -175,12 +176,8 @@ export default function PTSettings() {
 
       {active === "aparencia" && (
         <Section title="Aparência" desc="Tema e identidade visual">
-          <FieldSelect label="Tema" defaultValue="dark" options={[
-            { value: "dark", label: "Escuro" },
-            { value: "light", label: "Claro" },
-            { value: "system", label: "Automático (sistema)" },
-          ]}/>
-          <Field label="Cor da marca"><Input type="color" defaultValue="#3B82F6" className="h-11 w-24" /></Field>
+          <ThemeField />
+          <Field label="Cor da marca"><Input type="color" defaultValue="#BEF264" className="h-11 w-24" /></Field>
         </Section>
       )}
 
