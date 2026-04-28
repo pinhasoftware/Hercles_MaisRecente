@@ -162,14 +162,14 @@
 
 @layer components {
   .glass {
-    background: hsl(var(--glass) / 0.04);
+    background: hsl(var(--glass) / 0.05);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--glass) / 0.06);
+    border: 1px solid hsl(var(--glass) / 0.08);
   }
   .glass-strong {
-    background: hsl(var(--glass) / 0.08);
+    background: hsl(var(--glass) / 0.09);
     backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--glass) / 0.1);
+    border: 1px solid hsl(var(--glass) / 0.12);
   }
   .gradient-text-primary {
     background: var(--gradient-primary);
