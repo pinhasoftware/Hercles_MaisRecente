@@ -6,14 +6,85 @@
    All colors HSL. */
 
 @layer base {
+  /* ===== LIGHT — "Clean Lima" ===== */
   :root {
-    /* Core surfaces */
-    --background: 224 47% 7%;            /* #0A0F1E */
-    --foreground: 220 14% 96%;           /* #F9FAFB */
+    /* Core surfaces — white background, slate-blue tinted cards */
+    --background: 0 0% 100%;             /* #FFFFFF */
+    --foreground: 222 47% 11%;           /* slate-900 — almost black for max contrast */
+
+    --surface-1: 210 40% 98%;            /* #F8FAFC slate-50 */
+    --surface-2: 214 32% 95%;            /* slightly stronger separation */
+    --glass: 222 47% 11%;                /* dark glass tint over white */
+
+    --card: 210 40% 98%;                 /* #F8FAFC */
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Brand — Lima */
+    --primary: 83 81% 67%;               /* #BEF264 lime-300 */
+    --primary-foreground: 222 47% 11%;   /* dark slate text on lime */
+    --primary-glow: 83 88% 75%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;     /* slate-500 */
+
+    --accent: 263 79% 57%;               /* purple — AI accent */
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 263 90% 70%;
+
+    --energy: 38 92% 50%;
+    --energy-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+
+    --border: 214 32% 91%;               /* slate-200 */
+    --input: 214 32% 91%;
+    --ring: 83 81% 67%;
+
+    --radius: 1rem;
+
+    /* Gradients — lima-forward */
+    --gradient-primary: linear-gradient(135deg, hsl(83 81% 67%), hsl(75 85% 60%));
+    --gradient-ai: linear-gradient(135deg, hsl(263 79% 57%), hsl(283 90% 65%));
+    --gradient-energy: linear-gradient(135deg, hsl(38 92% 50%), hsl(20 95% 55%));
+    --gradient-hero: linear-gradient(160deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 60%, hsl(83 60% 92%) 100%);
+    --gradient-glow: radial-gradient(circle at top, hsl(83 81% 67% / 0.18), transparent 60%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(83 81% 67% / 0.45);
+    --shadow-ai: 0 0 30px hsl(263 79% 57% / 0.25);
+    --shadow-card: 0 8px 30px -10px hsl(222 47% 11% / 0.12);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 83 81% 67%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 83 81% 67%;
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ===== DARK ===== */
+  .dark {
+    --background: 224 47% 7%;
+    --foreground: 220 14% 96%;
 
     --surface-1: 224 35% 10%;
     --surface-2: 224 30% 13%;
-    --glass: 0 0% 100%;                  /* used with /4 /8 alpha */
+    --glass: 0 0% 100%;
 
     --card: 224 35% 10%;
     --card-foreground: 220 14% 96%;
@@ -21,10 +92,10 @@
     --popover: 224 40% 9%;
     --popover-foreground: 220 14% 96%;
 
-    /* Brand */
-    --primary: 159 100% 45%;             /* #00E5A0 energetic green */
+    /* Brand — Lima (consistent with light) */
+    --primary: 83 81% 67%;
     --primary-foreground: 224 47% 7%;
-    --primary-glow: 159 100% 60%;
+    --primary-glow: 83 88% 75%;
 
     --secondary: 224 25% 16%;
     --secondary-foreground: 220 14% 96%;
@@ -32,50 +103,41 @@
     --muted: 224 20% 14%;
     --muted-foreground: 220 9% 65%;
 
-    --accent: 263 79% 57%;               /* #7C3AED purple — AI */
+    --accent: 263 79% 57%;
     --accent-foreground: 0 0% 100%;
     --accent-glow: 263 90% 70%;
 
-    --energy: 38 92% 50%;                /* #F59E0B amber */
+    --energy: 38 92% 50%;
     --energy-foreground: 224 47% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 159 100% 45%;
+    --success: 83 81% 67%;
     --warning: 38 92% 50%;
 
     --border: 224 20% 18%;
     --input: 224 20% 18%;
-    --ring: 159 100% 45%;
+    --ring: 83 81% 67%;
 
-    --radius: 1rem;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(159 100% 45%), hsl(170 100% 50%));
+    --gradient-primary: linear-gradient(135deg, hsl(83 81% 67%), hsl(75 85% 60%));
     --gradient-ai: linear-gradient(135deg, hsl(263 79% 57%), hsl(283 90% 65%));
     --gradient-energy: linear-gradient(135deg, hsl(38 92% 50%), hsl(20 95% 55%));
     --gradient-hero: linear-gradient(160deg, hsl(224 47% 7%) 0%, hsl(224 47% 10%) 50%, hsl(263 40% 15%) 100%);
-    --gradient-glow: radial-gradient(circle at top, hsl(159 100% 45% / 0.15), transparent 60%);
+    --gradient-glow: radial-gradient(circle at top, hsl(83 81% 67% / 0.18), transparent 60%);
 
-    /* Shadows */
-    --shadow-glow: 0 0 40px hsl(159 100% 45% / 0.25);
+    --shadow-glow: 0 0 40px hsl(83 81% 67% / 0.35);
     --shadow-ai: 0 0 30px hsl(263 79% 57% / 0.35);
     --shadow-card: 0 8px 30px -8px hsl(224 47% 3% / 0.6);
 
-    /* Sidebar (unused but kept) */
     --sidebar-background: 224 35% 8%;
     --sidebar-foreground: 220 14% 96%;
-    --sidebar-primary: 159 100% 45%;
+    --sidebar-primary: 83 81% 67%;
     --sidebar-primary-foreground: 224 47% 7%;
     --sidebar-accent: 224 20% 14%;
     --sidebar-accent-foreground: 220 14% 96%;
     --sidebar-border: 224 20% 18%;
-    --sidebar-ring: 159 100% 45%;
-
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --sidebar-ring: 83 81% 67%;
   }
 }
 
