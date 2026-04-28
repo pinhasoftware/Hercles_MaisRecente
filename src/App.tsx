@@ -31,64 +31,71 @@ import ClientSettings from "./pages/client/ClientSettings.tsx";
 
 const queryClient = new QueryClient();
 
+function ThemedSonner() {
+  const { resolved } = useTheme();
+  return <Sonner theme={resolved} position="top-center" richColors visibleToasts={1} duration={2000} />;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner theme="dark" position="top-center" richColors visibleToasts={1} duration={2000} />
-      <BrowserRouter>
-        <AuthProvider>
-          <DemoProvider>
-            <PTUIProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <ThemedSonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <DemoProvider>
+              <PTUIProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
 
-                {/* PT routes */}
-                <Route
-                  path="/pt"
-                  element={
-                    <ProtectedRoute requireRole="trainer">
-                      <PTLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<PTHome />} />
-                  <Route path="clients" element={<PTClients />} />
-                  <Route path="clients/new" element={<PTClientNew />} />
-                  <Route path="clients/:id" element={<PTClientProfile />} />
-                  <Route path="clients/:clientId/workouts/:workoutId" element={<PTWorkoutBuilder />} />
-                  <Route path="ai" element={<PTAI />} />
-                  <Route path="chat" element={<PTChat />} />
-                  <Route path="chat/:clientId" element={<PTChat />} />
-                  <Route path="business" element={<PTBusiness />} />
-                  <Route path="settings" element={<PTSettings />} />
-                </Route>
+                  {/* PT routes */}
+                  <Route
+                    path="/pt"
+                    element={
+                      <ProtectedRoute requireRole="trainer">
+                        <PTLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<PTHome />} />
+                    <Route path="clients" element={<PTClients />} />
+                    <Route path="clients/new" element={<PTClientNew />} />
+                    <Route path="clients/:id" element={<PTClientProfile />} />
+                    <Route path="clients/:clientId/workouts/:workoutId" element={<PTWorkoutBuilder />} />
+                    <Route path="ai" element={<PTAI />} />
+                    <Route path="chat" element={<PTChat />} />
+                    <Route path="chat/:clientId" element={<PTChat />} />
+                    <Route path="business" element={<PTBusiness />} />
+                    <Route path="settings" element={<PTSettings />} />
+                  </Route>
 
-                {/* Client routes */}
-                <Route
-                  path="/app"
-                  element={
-                    <ProtectedRoute requireRole="client">
-                      <ClientLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<ClientHome />} />
-                  <Route path="workout" element={<ClientWorkout />} />
-                  <Route path="chat" element={<ClientChat />} />
-                  <Route path="nutrition" element={<ClientNutrition />} />
-                  <Route path="progress" element={<ClientProgress />} />
-                  <Route path="settings" element={<ClientSettings />} />
-                </Route>
+                  {/* Client routes */}
+                  <Route
+                    path="/app"
+                    element={
+                      <ProtectedRoute requireRole="client">
+                        <ClientLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<ClientHome />} />
+                    <Route path="workout" element={<ClientWorkout />} />
+                    <Route path="chat" element={<ClientChat />} />
+                    <Route path="nutrition" element={<ClientNutrition />} />
+                    <Route path="progress" element={<ClientProgress />} />
+                    <Route path="settings" element={<ClientSettings />} />
+                  </Route>
 
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </PTUIProvider>
-          </DemoProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </PTUIProvider>
+            </DemoProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
