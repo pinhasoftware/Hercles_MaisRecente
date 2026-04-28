@@ -258,3 +258,19 @@ function FieldToggle({ label, defaultChecked }: { label: string; defaultChecked?
     </div>
   );
 }
+
+function ThemeField() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <Field label="Tema">
+      <Select value={theme} onValueChange={(v) => setTheme(v as ThemeMode)}>
+        <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="dark">Escuro</SelectItem>
+          <SelectItem value="light">Claro</SelectItem>
+          <SelectItem value="system">Automático (sistema)</SelectItem>
+        </SelectContent>
+      </Select>
+    </Field>
+  );
+}
