@@ -240,6 +240,27 @@ export default function ClientProgress() {
   );
 }
 
+function PhotoTile({ p, onOpen, onRemove }: { p: ProgressPhoto; onOpen: () => void; onRemove: () => void }) {
+  return (
+    <div className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-secondary">
+      <button onClick={onOpen} className="absolute inset-0">
+        <img src={p.url} alt={p.note ?? p.date} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+      </button>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-1.5">
+        <p className="text-[10px] font-bold text-white">{format(new Date(p.date), "d MMM", { locale: pt })}</p>
+        {p.note && <p className="truncate text-[9px] text-white/80">{p.note}</p>}
+      </div>
+      <button
+        onClick={onRemove}
+        className="absolute right-1 top-1 grid h-6 w-6 place-items-center rounded-full bg-black/60 text-white opacity-0 transition-opacity hover:bg-destructive group-hover:opacity-100"
+        aria-label="Remover foto"
+      >
+        <Trash2 className="h-3 w-3" />
+      </button>
+    </div>
+  );
+}
+
 function Stat({ icon: Icon, label, value, tone }: { icon: React.ElementType; label: string; value: string; tone: "primary" | "energy" | "muted" }) {
   const cls =
     tone === "primary" ? "bg-primary/15 text-primary" :
