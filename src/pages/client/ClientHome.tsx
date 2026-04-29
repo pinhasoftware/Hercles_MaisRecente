@@ -48,9 +48,6 @@ export default function ClientHome() {
           <Link to="/app/settings" className="grid h-10 w-10 place-items-center rounded-xl bg-secondary" aria-label="Definições">
             <SettingsIcon className="h-5 w-5" />
           </Link>
-          <Link to="/app/settings#perfil" aria-label="Perfil">
-            <UserAvatar name={profile.client.name || ME.full_name} src={profile.client.avatarDataUrl} size="md" />
-          </Link>
         </div>
       </header>
 
