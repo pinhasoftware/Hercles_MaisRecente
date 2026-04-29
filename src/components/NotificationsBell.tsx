@@ -1,7 +1,17 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Bell, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export interface NotificationItem {
   id: string;
@@ -15,21 +25,40 @@ export interface NotificationItem {
 interface Props {
   items: NotificationItem[];
   align?: "left" | "right";
+  /** Unique key to persist the "cleared" state between reloads. */
+  storageKey?: string;
 }
 
 /**
  * Sino de notificações minimalista.
- * - Sem cores fortes nos ícones (estética limpa, monocromática com accent só no “unread dot”).
- * - Cada item navega para um sítio específico (suporta hash para deep-link em definições).
+ * Suporta limpar todas as notificações (com confirmação) — o estado fica persistido em localStorage.
  */
-export function NotificationsBell({ items, align = "right" }: Props) {
+export function NotificationsBell({ items, align = "right", storageKey = "fitpilot.notifications.cleared" }: Props) {
   const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [clearedIds, setClearedIds] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      return new Set<string>(raw ? JSON.parse(raw) : []);
+    } catch { return new Set(); }
+  });
   const navigate = useNavigate();
-  const unreadCount = items.filter((n) => n.unread).length;
+
+  useEffect(() => {
+    try { localStorage.setItem(storageKey, JSON.stringify(Array.from(clearedIds))); } catch { /* noop */ }
+  }, [clearedIds, storageKey]);
+
+  const visible = useMemo(() => items.filter((n) => !clearedIds.has(n.id)), [items, clearedIds]);
+  const unreadCount = visible.filter((n) => n.unread).length;
 
   function go(to?: string) {
     setOpen(false);
     if (to) navigate(to);
+  }
+
+  function clearAll() {
+    setClearedIds(new Set(items.map((n) => n.id)));
+    setConfirmOpen(false);
   }
 
   return (
@@ -53,22 +82,32 @@ export function NotificationsBell({ items, align = "right" }: Props) {
           <div
             className={cn(
               "z-50 overflow-hidden rounded-2xl border border-border bg-popover shadow-card",
-              // Mobile: centrado no ecrã
               "fixed left-1/2 top-20 w-[92vw] max-w-sm -translate-x-1/2",
-              // Desktop (sm+): ancorado ao sino
               "sm:absolute sm:top-12 sm:left-auto sm:translate-x-0 sm:w-[88vw]",
               align === "right" ? "sm:right-0" : "sm:left-0",
             )}
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <p className="text-sm font-bold">Notificações</p>
-              <span className="text-[11px] text-muted-foreground">{unreadCount} novas</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-muted-foreground">{unreadCount} novas</span>
+                {visible.length > 0 && (
+                  <button
+                    onClick={() => setConfirmOpen(true)}
+                    className="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    aria-label="Limpar todas"
+                    title="Limpar todas"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
             <ul className="max-h-[60vh] divide-y divide-border overflow-y-auto">
-              {items.length === 0 && (
+              {visible.length === 0 && (
                 <li className="px-4 py-6 text-center text-xs text-muted-foreground">Sem novidades.</li>
               )}
-              {items.map((n) => {
+              {visible.map((n) => {
                 const Icon = n.icon;
                 const inner = (
                   <div className="flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/40">
@@ -95,6 +134,23 @@ export function NotificationsBell({ items, align = "right" }: Props) {
           </div>
         </>
       )}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Limpar todas as notificações?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação remove todas as notificações actuais. Não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={clearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Apagar tudo
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
