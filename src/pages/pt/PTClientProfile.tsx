@@ -5,6 +5,7 @@ import { usePTUI } from "@/contexts/PTUIContext";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { SaveButton } from "@/components/SaveButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -274,7 +275,7 @@ export default function PTClientProfile() {
                 placeholder="Ex: 2200 kcal, 160P/220C/65G..."
                 className="mt-2 min-h-[100px]"
               />
-              <Button className="mt-3 w-full bg-gradient-primary text-primary-foreground hover:opacity-90">Atualizar plano</Button>
+              <SaveButton className="mt-3 w-full" toastText="Plano nutricional atualizado">Atualizar plano</SaveButton>
             </div>
 
             {/* Anexar ficheiro */}
@@ -324,7 +325,7 @@ export default function PTClientProfile() {
             <div className="glass rounded-2xl p-4">
               <Label className="text-xs font-bold uppercase tracking-wider text-primary">Dicas e recomendações</Label>
               <Textarea defaultValue="Beber 2L de água. Evitar açúcar refinado." className="mt-2 min-h-[80px]" />
-              <Button className="mt-3 w-full bg-gradient-primary text-primary-foreground hover:opacity-90">Guardar dicas</Button>
+              <SaveButton className="mt-3 w-full" toastText="Dicas guardadas">Guardar dicas</SaveButton>
             </div>
           </div>
         )}
@@ -394,7 +395,7 @@ export default function PTClientProfile() {
             </div>
             <Field label="Lesões"><Textarea defaultValue={client.injuries} /></Field>
             <Field label="Notas do PT (privado)"><Textarea defaultValue={client.notes} /></Field>
-            <Button className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90">Guardar ficha</Button>
+            <SaveButton className="w-full" toastText="Ficha guardada">Guardar ficha</SaveButton>
           </div>
         )}
       </section>
