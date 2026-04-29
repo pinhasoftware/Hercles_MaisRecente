@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useTheme, type ThemeMode } from "@/contexts/ThemeContext";
+import { useProfile, fileToDataURL } from "@/contexts/ProfileContext";
+import { UserAvatar } from "@/components/UserAvatar";
 
 const SECTIONS: SettingsSection[] = [
   { id: "geral", label: "Geral", icon: SettingsIcon, items: ["Idioma", "Fuso horário", "Formato de data", "Unidade de peso"] },
@@ -39,6 +41,8 @@ export default function ClientSettings() {
 
   function handleSave() {
     toast.success("Definições guardadas", { id: "settings-saved" });
+    setActive(null);
+    if (location.hash) navigate("/app/settings", { replace: true });
   }
 
   async function handleLogout() {
@@ -82,6 +86,7 @@ export default function ClientSettings() {
 
       {active === "perfil" && (
         <Section title="Perfil" desc="Os teus dados pessoais e objetivos">
+          <AvatarField />
           <Field label="Nome"><Input defaultValue="Ana Silva" /></Field>
           <div className="grid grid-cols-3 gap-2">
             <Field label="Idade"><Input type="number" /></Field>
@@ -233,6 +238,48 @@ function ThemeField() {
           <SelectItem value="system">Automático</SelectItem>
         </SelectContent>
       </Select>
+    </Field>
+  );
+}
+
+function AvatarField() {
+  const { profile, setClientAvatar } = useProfile();
+  const data = profile.client;
+
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try {
+      const url = await fileToDataURL(f);
+      setClientAvatar(url);
+      toast.success("Foto de perfil atualizada");
+    } catch {
+      toast.error("Não consegui ler a imagem");
+    } finally {
+      e.target.value = "";
+    }
+  }
+
+  return (
+    <Field label="Foto de perfil">
+      <div className="flex items-center gap-4 rounded-xl bg-secondary/40 p-3">
+        <UserAvatar name={data.name} src={data.avatarDataUrl} size="lg" />
+        <div className="flex flex-1 flex-col gap-2">
+          <label className="inline-flex h-9 cursor-pointer items-center justify-center rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground">
+            {data.avatarDataUrl ? "Alterar foto" : "Carregar foto"}
+            <input type="file" accept="image/*" className="hidden" onChange={onPick} />
+          </label>
+          {data.avatarDataUrl && (
+            <button
+              type="button"
+              onClick={() => setClientAvatar(null)}
+              className="text-left text-[11px] text-muted-foreground hover:text-foreground"
+            >
+              Remover foto
+            </button>
+          )}
+        </div>
+      </div>
     </Field>
   );
 }
