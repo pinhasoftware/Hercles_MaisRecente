@@ -44,7 +44,7 @@ export default function ClientHome() {
           <h1 className="text-2xl font-bold tracking-tight">{ME.full_name.split(" ")[0]} 🔥</h1>
         </div>
         <div className="flex items-center gap-2">
-          <NotificationsBell items={CLIENT_NOTIFICATIONS} />
+          <NotificationsBell items={CLIENT_NOTIFICATIONS} storageKey="fitpilot.notifications.cleared.client" />
           <Link to="/app/settings" className="grid h-10 w-10 place-items-center rounded-xl bg-secondary" aria-label="Definições">
             <SettingsIcon className="h-5 w-5" />
           </Link>

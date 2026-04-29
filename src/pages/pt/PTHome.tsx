@@ -48,7 +48,7 @@ export default function PTHome() {
             <p className="mt-0.5 text-xs text-muted-foreground">{active} clientes activos</p>
           </div>
           <div className="flex items-center gap-2">
-            <NotificationsBell items={NOTIFICATIONS} />
+            <NotificationsBell items={NOTIFICATIONS} storageKey="fitpilot.notifications.cleared.pt" />
             <Link to="/pt/settings" className="grid h-10 w-10 place-items-center rounded-xl bg-secondary" aria-label="Definições">
               <SettingsIcon className="h-5 w-5" />
             </Link>
