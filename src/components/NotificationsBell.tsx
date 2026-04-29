@@ -52,7 +52,7 @@ export function NotificationsBell({ items, align = "right" }: Props) {
           <div className="fixed inset-0 z-40 bg-background/40 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none" onClick={() => setOpen(false)} aria-hidden />
           <div
             className={cn(
-              "z-50 overflow-hidden rounded-2xl border border-border bg-popover shadow-card animate-fade-in",
+              "z-50 overflow-hidden rounded-2xl border border-border bg-popover shadow-card",
               // Mobile: centrado no ecrã
               "fixed left-1/2 top-20 w-[92vw] max-w-sm -translate-x-1/2",
               // Desktop (sm+): ancorado ao sino
