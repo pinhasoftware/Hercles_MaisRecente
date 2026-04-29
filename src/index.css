@@ -146,22 +146,15 @@
     @apply border-border;
   }
   html, body, #root {
-    @apply h-full;
+    height: 100%;
     /* Bloquear bounce/overscroll do iOS para a app parecer “presa” como nativa */
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
-  }
-  html {
-    /* Garante que o conteúdo respeita as safe-areas do notch/home indicator */
-    height: 100%;
-    height: -webkit-fill-available;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'ss01';
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
     /* Sem scroll horizontal nunca */
     overflow-x: hidden;
     overscroll-behavior-y: none;

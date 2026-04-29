@@ -3,10 +3,7 @@ import { PTBottomNav } from "./PTBottomNav";
 
 export function PTLayout() {
   return (
-    <div
-      className="relative mx-auto flex max-w-md flex-col overflow-hidden bg-background"
-      style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
-    >
+    <div className="relative mx-auto flex h-[100dvh] max-w-md flex-col overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[280px] bg-gradient-glow" />
       <div
         className="relative flex flex-1 flex-col overflow-y-auto overscroll-none safe-top"
