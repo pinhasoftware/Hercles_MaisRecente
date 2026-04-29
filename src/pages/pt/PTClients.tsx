@@ -236,13 +236,24 @@ export default function PTClients() {
       </header>
 
       {tab === "Calendário" ? (
-        <section className="flex-1 px-5 pt-3 pb-32">
+        <section className="flex-1 px-5 pt-3 pb-6">
+          <div className="sticky top-[100px] z-20 -mx-5 bg-background/85 px-5 pb-3 backdrop-blur-xl">
           <div className="glass rounded-2xl p-4">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex items-center justify-between gap-2">
               <button onClick={() => setWeekStart(subDays(weekStart, 7))} className="grid h-8 w-8 place-items-center rounded-lg bg-secondary"><ChevronLeft className="h-4 w-4" /></button>
-              <p className="text-sm font-semibold">
+              <p className="flex-1 text-center text-sm font-semibold">
                 {format(weekStart, "d MMM", { locale: pt })} – {format(addDays(weekStart, 6), "d MMM", { locale: pt })}
               </p>
+              <button
+                onClick={() => {
+                  const today = new Date();
+                  setWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
+                  setSelectedDay(today);
+                }}
+                className="rounded-lg bg-secondary px-2.5 py-1 text-[11px] font-semibold text-foreground hover:bg-secondary/80"
+              >
+                Hoje
+              </button>
               <button onClick={() => setWeekStart(addDays(weekStart, 7))} className="grid h-8 w-8 place-items-center rounded-lg bg-secondary"><ChevronRight className="h-4 w-4" /></button>
             </div>
             <div className="grid grid-cols-7 gap-1">
