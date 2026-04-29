@@ -49,11 +49,15 @@ export function NotificationsBell({ items, align = "right" }: Props) {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden />
+          <div className="fixed inset-0 z-40 bg-background/40 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none" onClick={() => setOpen(false)} aria-hidden />
           <div
             className={cn(
-              "absolute top-12 z-50 w-[88vw] max-w-sm overflow-hidden rounded-2xl border border-border bg-popover shadow-card animate-fade-in",
-              align === "right" ? "right-0" : "left-0",
+              "z-50 overflow-hidden rounded-2xl border border-border bg-popover shadow-card animate-fade-in",
+              // Mobile: centrado no ecrã
+              "fixed left-1/2 top-20 w-[92vw] max-w-sm -translate-x-1/2",
+              // Desktop (sm+): ancorado ao sino
+              "sm:absolute sm:top-12 sm:left-auto sm:translate-x-0 sm:w-[88vw]",
+              align === "right" ? "sm:right-0" : "sm:left-0",
             )}
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
