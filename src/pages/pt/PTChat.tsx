@@ -34,20 +34,19 @@ export default function PTChat() {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [chatStore, setChatStore] = useState<MockChatMessage[]>(() => [...mockChats]);
-  const [addedIds, setAddedIds] = useState<string[]>(() => {
-    try {
-      const raw = localStorage.getItem(ADDED_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [chatStore, setChatStore] = usePageState<MockChatMessage[]>("pt.chat.store", [...mockChats]);
+  const [addedIds, setAddedIds] = usePageState<string[]>("pt.chat.added", []);
   const [showAddSheet, setShowAddSheet] = useState(false);
 
+  // legacy migrate: importa lista antiga em localStorage para PageState
   useEffect(() => {
-    try { localStorage.setItem(ADDED_KEY, JSON.stringify(addedIds)); } catch { /* noop */ }
-  }, [addedIds]);
+    if (addedIds.length > 0) return;
+    try {
+      const legacy = JSON.parse(localStorage.getItem(ADDED_KEY) ?? "[]");
+      if (Array.isArray(legacy) && legacy.length) setAddedIds(legacy);
+    } catch { /* */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function addClient(id: string) {
     setAddedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
