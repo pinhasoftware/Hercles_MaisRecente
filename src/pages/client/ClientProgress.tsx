@@ -24,6 +24,7 @@ export default function ClientProgress() {
   const [date, setDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
   const [note, setNote] = useState("");
   const [preview, setPreview] = useState<ProgressPhoto | null>(null);
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -166,26 +167,34 @@ export default function ClientProgress() {
             <p className="text-xs text-muted-foreground">Sem fotos ainda. Adiciona a primeira para começares a tua timeline.</p>
           </div>
         ) : (
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {photos.map((p) => (
-              <div key={p.id} className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-secondary">
-                <button onClick={() => setPreview(p)} className="absolute inset-0">
-                  <img src={p.url} alt={p.note ?? p.date} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-                </button>
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-1.5">
-                  <p className="text-[10px] font-bold text-white">{format(new Date(p.date), "d MMM", { locale: pt })}</p>
-                  {p.note && <p className="truncate text-[9px] text-white/80">{p.note}</p>}
-                </div>
+          <>
+            {/* 3 fotos mais recentes — sempre visíveis */}
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {photos.slice(0, 3).map((p) => (
+                <PhotoTile key={p.id} p={p} onOpen={() => setPreview(p)} onRemove={() => remove(p.id)} />
+              ))}
+            </div>
+
+            {photos.length > 3 && (
+              <>
                 <button
-                  onClick={() => remove(p.id)}
-                  className="absolute right-1 top-1 grid h-6 w-6 place-items-center rounded-full bg-black/60 text-white opacity-0 transition-opacity hover:bg-destructive group-hover:opacity-100"
-                  aria-label="Remover foto"
+                  onClick={() => setShowAllPhotos((v) => !v)}
+                  className="mx-auto mt-2 block rounded-full bg-secondary/60 px-3 py-1 text-[11px] font-semibold text-muted-foreground hover:bg-secondary"
+                  aria-expanded={showAllPhotos}
                 >
-                  <Trash2 className="h-3 w-3" />
+                  {showAllPhotos ? "Ocultar" : `Ver tudo (${photos.length - 3} mais antigas)`}
                 </button>
-              </div>
-            ))}
-          </div>
+
+                {showAllPhotos && (
+                  <div className="mt-2 grid grid-cols-3 gap-2 rounded-2xl bg-secondary/20 p-2 animate-fade-in">
+                    {photos.slice(3).map((p) => (
+                      <PhotoTile key={p.id} p={p} onOpen={() => setPreview(p)} onRemove={() => remove(p.id)} />
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
       </section>
 
