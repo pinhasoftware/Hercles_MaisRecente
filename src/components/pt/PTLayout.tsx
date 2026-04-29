@@ -5,12 +5,12 @@ export function PTLayout() {
   return (
     <div
       className="relative mx-auto flex max-w-md flex-col overflow-hidden bg-background"
-      style={{ height: "100dvh" }}
+      style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[280px] bg-gradient-glow" />
       <div
-        className="relative flex flex-1 flex-col overflow-y-auto safe-top"
-        style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+        className="relative flex flex-1 flex-col overflow-y-auto overscroll-none safe-top"
+        style={{ paddingBottom: "calc(4.5rem + env(safe-area-inset-bottom))" }}
       >
         <Outlet />
       </div>

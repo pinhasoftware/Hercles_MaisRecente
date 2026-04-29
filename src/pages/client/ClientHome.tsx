@@ -10,8 +10,6 @@ import { greetingPT } from "@/lib/format";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { NotificationsBell, type NotificationItem } from "@/components/NotificationsBell";
-import { useProfile } from "@/contexts/ProfileContext";
-import { UserAvatar } from "@/components/UserAvatar";
 
 const ME = clientById("c1")!;
 
@@ -27,7 +25,6 @@ const CLIENT_NOTIFICATIONS: NotificationItem[] = [
 ];
 
 export default function ClientHome() {
-  const { profile } = useProfile();
   const upcoming = mockSessions
     .filter((s) => s.client_id === ME.id && new Date(s.scheduled_at) >= new Date(new Date().setHours(0, 0, 0, 0)))
     .sort((a, b) => +new Date(a.scheduled_at) - +new Date(b.scheduled_at))
@@ -44,12 +41,9 @@ export default function ClientHome() {
           <h1 className="text-2xl font-bold tracking-tight">{ME.full_name.split(" ")[0]} 🔥</h1>
         </div>
         <div className="flex items-center gap-2">
-          <NotificationsBell items={CLIENT_NOTIFICATIONS} />
+          <NotificationsBell items={CLIENT_NOTIFICATIONS} storageKey="fitpilot.notifications.cleared.client" />
           <Link to="/app/settings" className="grid h-10 w-10 place-items-center rounded-xl bg-secondary" aria-label="Definições">
             <SettingsIcon className="h-5 w-5" />
-          </Link>
-          <Link to="/app/settings#perfil" aria-label="Perfil">
-            <UserAvatar name={profile.client.name || ME.full_name} src={profile.client.avatarDataUrl} size="md" />
           </Link>
         </div>
       </header>
