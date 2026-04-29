@@ -280,6 +280,20 @@ export default function PTClients() {
             </div>
           </div>
 
+          {/* Barra de comando AI fixa logo debaixo do calendário */}
+          <div className="mt-2 glass-strong flex items-center gap-2 rounded-full p-1.5 shadow-card">
+            <input
+              value={aiInput}
+              onChange={(e) => setAiInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") executeAI(); }}
+              placeholder="Ex: marca treino com Ana sexta 10h"
+              className="flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
+            />
+            <button className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-muted-foreground" aria-label="Ditar"><Mic className="h-4 w-4" /></button>
+            <button onClick={executeAI} className="grid h-9 w-9 place-items-center rounded-full bg-gradient-ai text-accent-foreground shadow-ai" aria-label="Enviar"><Send className="h-4 w-4" /></button>
+          </div>
+          </div>
+
           <h3 className="mt-5 mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
             {format(selectedDay, "EEEE, d MMM", { locale: pt })}
           </h3>
