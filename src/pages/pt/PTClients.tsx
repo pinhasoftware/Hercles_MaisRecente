@@ -236,13 +236,24 @@ export default function PTClients() {
       </header>
 
       {tab === "Calendário" ? (
-        <section className="flex-1 px-5 pt-3 pb-32">
+        <section className="flex-1 px-5 pt-3 pb-6">
+          <div className="sticky top-[100px] z-20 -mx-5 bg-background/85 px-5 pb-3 backdrop-blur-xl">
           <div className="glass rounded-2xl p-4">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex items-center justify-between gap-2">
               <button onClick={() => setWeekStart(subDays(weekStart, 7))} className="grid h-8 w-8 place-items-center rounded-lg bg-secondary"><ChevronLeft className="h-4 w-4" /></button>
-              <p className="text-sm font-semibold">
+              <p className="flex-1 text-center text-sm font-semibold">
                 {format(weekStart, "d MMM", { locale: pt })} – {format(addDays(weekStart, 6), "d MMM", { locale: pt })}
               </p>
+              <button
+                onClick={() => {
+                  const today = new Date();
+                  setWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
+                  setSelectedDay(today);
+                }}
+                className="rounded-lg bg-secondary px-2.5 py-1 text-[11px] font-semibold text-foreground hover:bg-secondary/80"
+              >
+                Hoje
+              </button>
               <button onClick={() => setWeekStart(addDays(weekStart, 7))} className="grid h-8 w-8 place-items-center rounded-lg bg-secondary"><ChevronRight className="h-4 w-4" /></button>
             </div>
             <div className="grid grid-cols-7 gap-1">
@@ -267,6 +278,20 @@ export default function PTClients() {
                 );
               })}
             </div>
+          </div>
+
+          {/* Barra de comando AI fixa logo debaixo do calendário */}
+          <div className="mt-2 glass-strong flex items-center gap-2 rounded-full p-1.5 shadow-card">
+            <input
+              value={aiInput}
+              onChange={(e) => setAiInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") executeAI(); }}
+              placeholder="Ex: marca treino com Ana sexta 10h"
+              className="flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
+            />
+            <button className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-muted-foreground" aria-label="Ditar"><Mic className="h-4 w-4" /></button>
+            <button onClick={executeAI} className="grid h-9 w-9 place-items-center rounded-full bg-gradient-ai text-accent-foreground shadow-ai" aria-label="Enviar"><Send className="h-4 w-4" /></button>
+          </div>
           </div>
 
           <h3 className="mt-5 mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -297,20 +322,6 @@ export default function PTClients() {
             </ul>
           )}
 
-          {/* Barra de comando AI fixa no fundo, acima da bottom-nav (h-16 ≈ 4rem) */}
-          <div className="pointer-events-none fixed inset-x-0 bottom-20 z-20 mx-auto max-w-md px-5">
-            <div className="pointer-events-auto glass-strong flex items-center gap-2 rounded-full p-1.5 shadow-card">
-              <input
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") executeAI(); }}
-                placeholder="Ex: marca treino com Ana sexta 10h"
-                className="flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
-              />
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-muted-foreground" aria-label="Ditar"><Mic className="h-4 w-4" /></button>
-              <button onClick={executeAI} className="grid h-9 w-9 place-items-center rounded-full bg-gradient-ai text-accent-foreground shadow-ai" aria-label="Enviar"><Send className="h-4 w-4" /></button>
-            </div>
-          </div>
         </section>
       ) : (
         <section className="flex-1 px-5 pt-3">

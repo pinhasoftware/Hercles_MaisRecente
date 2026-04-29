@@ -115,8 +115,11 @@ export default function PTAI() {
         </div>
       </ScrollArea>
 
-      <div className="sticky bottom-0 -mx-5 border-t border-border/60 bg-background/85 px-5 py-3 backdrop-blur-xl">
-        <div className="flex items-end gap-2">
+      <div
+        className="sticky -mx-5 border-t border-border/60 bg-background/85 px-5 py-3 backdrop-blur-xl"
+        style={{ bottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div className="flex items-center gap-2">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -127,7 +130,8 @@ export default function PTAI() {
               }
             }}
             placeholder="Pergunta ao Pilot…"
-            className="min-h-[44px] max-h-32 resize-none rounded-2xl"
+            rows={1}
+            className="h-11 min-h-[44px] max-h-32 flex-1 resize-none rounded-2xl py-2.5 leading-tight"
           />
           <Button
             size="icon"
