@@ -40,7 +40,7 @@ export default function PTHome() {
 
   return (
     <div className="pb-6">
-      <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl">
+      <header className="bg-background">
         <div className="flex items-center justify-between px-5 pb-4 pt-6">
           <div>
             <p className="text-xs font-medium text-muted-foreground">{greetingPT()},</p>
@@ -92,8 +92,8 @@ export default function PTHome() {
       <div className="grid grid-cols-2 gap-2.5 px-5 pt-2">
         <KPI icon={UsersIcon} label="Clientes activos" value={String(active)} delta="+1" tone="primary" />
         <KPI icon={Wallet} label="Receita mensal" value={fmtEUR(revenue)} tone="primary" />
-        <KPI icon={Activity} label="Assiduidade média" value={`${attendance}%`} tone="muted" />
-        <Link to="/pt/chat" className="contents"><KPI icon={MessageSquare} label="Por responder" value={String(pending)} tone="muted" /></Link>
+        <KPI icon={Activity} label="Assiduidade média" value={`${attendance}%`} tone="primary" />
+        <Link to="/pt/chat" className="contents"><KPI icon={MessageSquare} label="Por responder" value={String(pending)} tone="primary" /></Link>
       </div>
 
       <section className="px-5 pt-4">
