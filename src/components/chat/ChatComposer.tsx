@@ -161,7 +161,7 @@ export function ChatComposer({ text, setText, pending, setPending, onSend, leftS
   }
 
   return (
-    <div className="border-t border-border/60 bg-background/85 px-3 py-2.5 backdrop-blur-xl safe-bottom">
+    <div className="border-t border-border/60 bg-background/85 px-3 py-2.5 backdrop-blur-xl">
       {/* Pré-visualização de anexos pendentes */}
       {pending.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-2">

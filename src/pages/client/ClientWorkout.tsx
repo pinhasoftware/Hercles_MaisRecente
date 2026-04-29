@@ -161,7 +161,10 @@ export default function ClientWorkout() {
           ))}
         </div>
 
-        <div className="fixed bottom-20 left-0 right-0 z-40 mx-auto max-w-md px-5">
+        <div
+          className="fixed left-0 right-0 z-40 mx-auto max-w-md px-5"
+          style={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+        >
           <Button
             onClick={handleStart}
             className="h-14 w-full rounded-full bg-gradient-primary text-base font-bold text-primary-foreground shadow-glow animate-pulse-glow"
@@ -213,7 +216,10 @@ export default function ClientWorkout() {
         ))}
       </div>
 
-      <div className="fixed bottom-20 left-0 right-0 z-40 mx-auto max-w-md px-5">
+      <div
+        className="fixed left-0 right-0 z-40 mx-auto max-w-md px-5"
+        style={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+      >
         <Button
           onClick={handleFinish}
           className="h-12 w-full rounded-full bg-gradient-primary text-primary-foreground shadow-glow"
