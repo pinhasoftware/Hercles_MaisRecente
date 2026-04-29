@@ -94,7 +94,9 @@ const App = () => (
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </PTUIProvider>
+                  </PTUIProvider>
+                </PageStateProvider>
+              </ProfileProvider>
             </DemoProvider>
           </AuthProvider>
         </BrowserRouter>
