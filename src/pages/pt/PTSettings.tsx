@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useTheme, type ThemeMode } from "@/contexts/ThemeContext";
+import { useProfile, fileToDataURL } from "@/contexts/ProfileContext";
+import { UserAvatar } from "@/components/UserAvatar";
 
 const SECTIONS: SettingsSection[] = [
   { id: "geral", label: "Geral", icon: SettingsIcon, items: ["Idioma", "Fuso horário", "Formato de data", "Moeda", "Unidade de peso"] },
@@ -42,6 +44,9 @@ export default function PTSettings() {
 
   function handleSave() {
     toast.success("Definições guardadas", { id: "settings-saved" });
+    // Volta para o índice de definições (vista geral) depois de guardar.
+    setActive(null);
+    if (location.hash) navigate("/pt/settings", { replace: true });
   }
 
   async function handleLogout() {
@@ -92,6 +97,7 @@ export default function PTSettings() {
 
       {active === "perfil" && (
         <Section title="Perfil profissional" desc="O que os teus clientes vêem">
+          <AvatarField who="pt" />
           <Field label="Nome profissional"><Input defaultValue="Ricardo Pereira" /></Field>
           <Field label="Biografia"><Textarea placeholder="Conta a tua história..." /></Field>
           <Field label="Email"><Input type="email" defaultValue="ricardo@fitpilot.app" /></Field>
