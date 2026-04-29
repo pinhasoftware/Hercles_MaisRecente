@@ -54,8 +54,8 @@ export default function PTAI() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] flex-col px-5 pt-6">
-      <div className="mb-4 flex items-center gap-3">
+    <div className="flex h-full min-h-0 flex-1 flex-col">
+      <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-border/60 bg-background/90 px-5 py-3 backdrop-blur-xl">
         <div className="grid h-10 w-10 place-items-center rounded-xl shadow-[var(--shadow-ai)]" style={{ background: "var(--gradient-ai)" }}>
           <Sparkles className="h-5 w-5 text-white" />
         </div>
@@ -65,7 +65,7 @@ export default function PTAI() {
         </div>
       </div>
 
-      <ScrollArea className="flex-1" ref={scrollRef as never}>
+      <ScrollArea className="flex-1 px-5 pt-4" ref={scrollRef as never}>
         <div className="space-y-3 pb-4 pr-1">
           {messages.length === 0 && !loading && (
             <div className="space-y-4 pt-6">
@@ -115,10 +115,7 @@ export default function PTAI() {
         </div>
       </ScrollArea>
 
-      <div
-        className="sticky -mx-5 border-t border-border/60 bg-background/85 px-5 py-3 backdrop-blur-xl"
-        style={{ bottom: "env(safe-area-inset-bottom, 0px)" }}
-      >
+      <div className="sticky bottom-0 border-t border-border/60 bg-background/90 px-5 py-3 backdrop-blur-xl">
         <div className="flex items-center gap-2">
           <Textarea
             value={input}
