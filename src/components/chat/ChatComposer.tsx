@@ -185,7 +185,7 @@ export function ChatComposer({ text, setText, pending, setPending, onSend, leftS
           </Button>
         </div>
       ) : (
-        <div className="flex items-end gap-2">
+        <div className="flex flex-nowrap items-end gap-1.5">
           {leftSlot}
 
           {/* Botão de anexos */}
@@ -235,7 +235,7 @@ export function ChatComposer({ text, setText, pending, setPending, onSend, leftS
               }
             }}
             placeholder={placeholder ?? "Mensagem…"}
-            className="min-h-[40px] max-h-32 resize-none rounded-2xl"
+            className="min-h-[40px] max-h-32 min-w-0 flex-1 resize-none rounded-2xl"
           />
 
           {canSend ? (
