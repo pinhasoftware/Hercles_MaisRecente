@@ -35,7 +35,17 @@ const queryClient = new QueryClient();
 
 function ThemedSonner() {
   const { resolved } = useTheme();
-  return <Sonner theme={resolved} position="top-center" richColors visibleToasts={1} duration={2000} />;
+  return (
+    <Sonner
+      theme={resolved}
+      position="top-center"
+      richColors
+      visibleToasts={1}
+      duration={2000}
+      offset="calc(env(safe-area-inset-top) + 16px)"
+      mobileOffset="calc(env(safe-area-inset-top) + 12px)"
+    />
+  );
 }
 
 const App = () => (
