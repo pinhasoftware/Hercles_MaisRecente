@@ -177,7 +177,7 @@ export default function PTClientProfile() {
         </div>
       </header>
 
-      <div className="sticky top-0 z-20 -mt-2 mb-4 bg-background/85 px-5 backdrop-blur-xl">
+      <div className="sticky top-0 z-20 mb-4 bg-background/95 px-5 py-2 backdrop-blur-xl">
         <div className="grid grid-cols-4 gap-1 rounded-xl bg-secondary p-1">
           {([
             ["plano", Dumbbell, "Plano"],
