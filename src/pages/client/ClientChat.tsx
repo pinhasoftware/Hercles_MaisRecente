@@ -58,7 +58,7 @@ export default function ClientChat() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-5rem)] flex-col">
+    <div className="flex h-full min-h-0 flex-1 flex-col">
       <header className="flex items-center gap-3 border-b border-border/60 bg-background/85 px-5 py-4 backdrop-blur-xl">
         <div className="grid h-10 w-10 place-items-center rounded-full" style={{ background: "var(--gradient-primary)" }}>
           <Sparkles className="h-4 w-4 text-primary-foreground" />

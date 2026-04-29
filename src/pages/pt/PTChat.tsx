@@ -325,7 +325,7 @@ function ChatThread({
   }
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] flex-col">
+    <div className="flex h-full min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-3 border-b border-border/60 bg-background/85 px-4 py-3 backdrop-blur-xl">
         <button onClick={onBack} className="grid h-9 w-9 place-items-center rounded-full hover:bg-secondary">
           <ArrowLeft className="h-5 w-5" />
