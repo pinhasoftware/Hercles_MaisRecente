@@ -52,9 +52,6 @@ export default function PTHome() {
             <Link to="/pt/settings" className="grid h-10 w-10 place-items-center rounded-xl bg-secondary" aria-label="Definições">
               <SettingsIcon className="h-5 w-5" />
             </Link>
-            <Link to="/pt/settings#perfil" aria-label="Perfil">
-              <UserAvatar name={profile.pt.name} src={profile.pt.avatarDataUrl} size="md" />
-            </Link>
           </div>
         </div>
 
