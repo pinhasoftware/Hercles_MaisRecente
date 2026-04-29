@@ -289,9 +289,9 @@ function ChatThread({
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  function suggest() {
+  function toggleSuggest() {
     if (!client) return;
-    setSuggestions(SUGGESTIONS_BANK[client.id] ?? SUGGESTIONS_BANK.default);
+    setSuggestions((prev) => (prev.length > 0 ? [] : (SUGGESTIONS_BANK[client.id] ?? SUGGESTIONS_BANK.default)));
   }
 
   function send(text: string, atts: ChatAttachment[]) {
@@ -396,9 +396,13 @@ function ChatThread({
           <Button
             size="icon"
             variant="ghost"
-            onClick={suggest}
-            className="h-10 w-10 shrink-0 self-center rounded-full text-accent hover:bg-accent/10"
+            onClick={toggleSuggest}
+            className={cn(
+              "h-10 w-10 shrink-0 self-center rounded-full text-accent hover:bg-accent/10",
+              suggestions.length > 0 && "bg-accent/15",
+            )}
             aria-label="Sugestões IA"
+            aria-pressed={suggestions.length > 0}
           >
             <Sparkles className="h-4 w-4" />
           </Button>
