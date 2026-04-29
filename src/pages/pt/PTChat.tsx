@@ -280,7 +280,8 @@ function ChatThread({
     () => chatStore.filter((m) => m.client_id === client?.id).sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)),
     [chatStore, client],
   );
-  const [input, setInput] = useState("");
+  const [input, setInput] = usePageState<string>(`pt.chat.draft.${client?.id ?? "x"}`, "");
+  const [pending, setPending] = usePageState<ChatAttachment[]>(`pt.chat.pending.${client?.id ?? "x"}`, []);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -293,10 +294,10 @@ function ChatThread({
     setSuggestions(SUGGESTIONS_BANK[client.id] ?? SUGGESTIONS_BANK.default);
   }
 
-  function send(text: string) {
+  function send(text: string, atts: ChatAttachment[]) {
     if (!client) return;
     const t = text.trim();
-    if (!t) return;
+    if (!t && atts.length === 0) return;
     setSuggestions([]);
     setChatStore((prev) => [
       ...prev,
@@ -307,9 +308,11 @@ function ChatThread({
         content: t,
         created_at: new Date().toISOString(),
         read: true,
+        attachments: atts.length ? atts : undefined,
       },
     ]);
     setInput("");
+    setPending([]);
   }
 
   if (!client) {
