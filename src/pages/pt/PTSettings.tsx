@@ -280,3 +280,46 @@ function ThemeField() {
     </Field>
   );
 }
+
+function AvatarField({ who }: { who: "pt" | "client" }) {
+  const { profile, setPTAvatar, setClientAvatar } = useProfile();
+  const data = who === "pt" ? profile.pt : profile.client;
+  const set = who === "pt" ? setPTAvatar : setClientAvatar;
+
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try {
+      const url = await fileToDataURL(f);
+      set(url);
+      toast.success("Foto de perfil atualizada");
+    } catch {
+      toast.error("Não consegui ler a imagem");
+    } finally {
+      e.target.value = "";
+    }
+  }
+
+  return (
+    <Field label="Foto de perfil">
+      <div className="flex items-center gap-4 rounded-xl bg-secondary/40 p-3">
+        <UserAvatar name={data.name} src={data.avatarDataUrl} size="lg" />
+        <div className="flex flex-1 flex-col gap-2">
+          <label className="inline-flex h-9 cursor-pointer items-center justify-center rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground">
+            {data.avatarDataUrl ? "Alterar foto" : "Carregar foto"}
+            <input type="file" accept="image/*" className="hidden" onChange={onPick} />
+          </label>
+          {data.avatarDataUrl && (
+            <button
+              type="button"
+              onClick={() => set(null)}
+              className="text-left text-[11px] text-muted-foreground hover:text-foreground"
+            >
+              Remover foto
+            </button>
+          )}
+        </div>
+      </div>
+    </Field>
+  );
+}
