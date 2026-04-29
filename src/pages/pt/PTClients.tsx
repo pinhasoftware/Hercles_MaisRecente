@@ -308,20 +308,6 @@ export default function PTClients() {
             </ul>
           )}
 
-          {/* Barra de comando AI fixa no fundo, acima da bottom-nav (h-16 ≈ 4rem) */}
-          <div className="pointer-events-none fixed inset-x-0 bottom-20 z-20 mx-auto max-w-md px-5">
-            <div className="pointer-events-auto glass-strong flex items-center gap-2 rounded-full p-1.5 shadow-card">
-              <input
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") executeAI(); }}
-                placeholder="Ex: marca treino com Ana sexta 10h"
-                className="flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
-              />
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-muted-foreground" aria-label="Ditar"><Mic className="h-4 w-4" /></button>
-              <button onClick={executeAI} className="grid h-9 w-9 place-items-center rounded-full bg-gradient-ai text-accent-foreground shadow-ai" aria-label="Enviar"><Send className="h-4 w-4" /></button>
-            </div>
-          </div>
         </section>
       ) : (
         <section className="flex-1 px-5 pt-3">
