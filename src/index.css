@@ -147,16 +147,39 @@
   }
   html, body, #root {
     @apply h-full;
+    /* Bloquear bounce/overscroll do iOS para a app parecer “presa” como nativa */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  html {
+    /* Garante que o conteúdo respeita as safe-areas do notch/home indicator */
+    height: 100%;
+    height: -webkit-fill-available;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'ss01';
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    /* Sem scroll horizontal nunca */
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
   }
   h1, h2, h3, h4 {
     font-family: 'Inter', system-ui, sans-serif;
     letter-spacing: -0.02em;
     font-weight: 700;
+  }
+
+  /* iOS: impede o auto-zoom do Safari quando o input tem font-size < 16px.
+     Forçamos 16px em todos os campos editáveis. */
+  input, textarea, select {
+    font-size: 16px;
+  }
+  @media (min-width: 768px) {
+    /* Em desktop podemos voltar a tamanhos menores */
+    input, textarea, select { font-size: 14px; }
   }
 }
 

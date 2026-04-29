@@ -7,6 +7,8 @@ import { DemoProvider } from "@/contexts/DemoContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PTUIProvider } from "@/contexts/PTUIContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { PageStateProvider } from "@/contexts/PageStateContext";
+import { ProfileProvider } from "@/contexts/ProfileContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PTLayout } from "@/components/pt/PTLayout";
 import { ClientLayout } from "@/components/client/ClientLayout";
@@ -45,7 +47,9 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <DemoProvider>
-              <PTUIProvider>
+              <ProfileProvider>
+                <PageStateProvider>
+                  <PTUIProvider>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
@@ -90,7 +94,9 @@ const App = () => (
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </PTUIProvider>
+                  </PTUIProvider>
+                </PageStateProvider>
+              </ProfileProvider>
             </DemoProvider>
           </AuthProvider>
         </BrowserRouter>

@@ -28,6 +28,16 @@ export interface MockSession {
   paid: boolean;
 }
 
+export interface MockChatAttachment {
+  id: string;
+  kind: "image" | "file" | "audio";
+  url: string;
+  name: string;
+  duration?: number;
+  size?: number;
+  mime?: string;
+}
+
 export interface MockChatMessage {
   id: string;
   client_id: string;
@@ -35,6 +45,7 @@ export interface MockChatMessage {
   content: string;
   created_at: string;
   read: boolean;
+  attachments?: MockChatAttachment[];
 }
 
 export type ExerciseMode = "reps" | "time";

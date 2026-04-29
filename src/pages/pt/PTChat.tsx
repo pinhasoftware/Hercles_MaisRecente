@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ArrowLeft, Send, Sparkles, MessageCircle, MessageSquarePlus, Plus } from "lucide-react";
+import { ArrowLeft, Sparkles, MessageCircle, MessageSquarePlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { mockClients, mockChats, clientById, type MockChatMessage, type MockClient } from "@/lib/mocks";
+import { ChatComposer, ChatAttachmentBubble, type ChatAttachment } from "@/components/chat/ChatComposer";
+import { usePageState } from "@/contexts/PageStateContext";
 
 const ADDED_KEY = "fitpilot_pt_chat_added";
 
@@ -33,20 +34,19 @@ export default function PTChat() {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [chatStore, setChatStore] = useState<MockChatMessage[]>(() => [...mockChats]);
-  const [addedIds, setAddedIds] = useState<string[]>(() => {
-    try {
-      const raw = localStorage.getItem(ADDED_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [chatStore, setChatStore] = usePageState<MockChatMessage[]>("pt.chat.store", [...mockChats]);
+  const [addedIds, setAddedIds] = usePageState<string[]>("pt.chat.added", []);
   const [showAddSheet, setShowAddSheet] = useState(false);
 
+  // legacy migrate: importa lista antiga em localStorage para PageState
   useEffect(() => {
-    try { localStorage.setItem(ADDED_KEY, JSON.stringify(addedIds)); } catch { /* noop */ }
-  }, [addedIds]);
+    if (addedIds.length > 0) return;
+    try {
+      const legacy = JSON.parse(localStorage.getItem(ADDED_KEY) ?? "[]");
+      if (Array.isArray(legacy) && legacy.length) setAddedIds(legacy);
+    } catch { /* */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function addClient(id: string) {
     setAddedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -280,7 +280,8 @@ function ChatThread({
     () => chatStore.filter((m) => m.client_id === client?.id).sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)),
     [chatStore, client],
   );
-  const [input, setInput] = useState("");
+  const [input, setInput] = usePageState<string>(`pt.chat.draft.${client?.id ?? "x"}`, "");
+  const [pending, setPending] = usePageState<ChatAttachment[]>(`pt.chat.pending.${client?.id ?? "x"}`, []);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -293,10 +294,10 @@ function ChatThread({
     setSuggestions(SUGGESTIONS_BANK[client.id] ?? SUGGESTIONS_BANK.default);
   }
 
-  function send(text: string) {
+  function send(text: string, atts: ChatAttachment[]) {
     if (!client) return;
     const t = text.trim();
-    if (!t) return;
+    if (!t && atts.length === 0) return;
     setSuggestions([]);
     setChatStore((prev) => [
       ...prev,
@@ -307,9 +308,11 @@ function ChatThread({
         content: t,
         created_at: new Date().toISOString(),
         read: true,
+        attachments: atts.length ? atts : undefined,
       },
     ]);
     setInput("");
+    setPending([]);
   }
 
   if (!client) {
@@ -345,14 +348,15 @@ function ChatThread({
             <div key={m.id} className={cn("flex", m.sender_role === "trainer" ? "justify-end" : "justify-start")}>
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                  "max-w-[80%] space-y-1.5 rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
                   m.sender_role === "trainer"
                     ? "rounded-br-sm bg-primary text-primary-foreground"
                     : "glass rounded-bl-sm",
                 )}
               >
-                <p className="whitespace-pre-wrap">{m.content}</p>
-                <p className={cn("mt-0.5 text-[9px] opacity-60", m.sender_role === "trainer" && "text-right")}>
+                {m.attachments?.map((a) => <ChatAttachmentBubble key={a.id} att={a} />)}
+                {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+                <p className={cn("text-[9px] opacity-60", m.sender_role === "trainer" && "text-right")}>
                   {new Date(m.created_at).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
@@ -381,34 +385,25 @@ function ChatThread({
         </div>
       )}
 
-      <div className="border-t border-border/60 bg-background/85 px-3 py-2.5 backdrop-blur-xl safe-bottom">
-        <div className="flex items-end gap-2">
+      <ChatComposer
+        text={input}
+        setText={setInput}
+        pending={pending}
+        setPending={setPending}
+        onSend={send}
+        placeholder="Mensagem…"
+        leftSlot={
           <Button
             size="icon"
             variant="ghost"
             onClick={suggest}
-            className="h-10 w-10 shrink-0 rounded-full text-accent hover:bg-accent/10"
+            className="h-10 w-10 shrink-0 self-center rounded-full text-accent hover:bg-accent/10"
             aria-label="Sugestões IA"
           >
             <Sparkles className="h-4 w-4" />
           </Button>
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send(input);
-              }
-            }}
-            placeholder="Mensagem…"
-            className="min-h-[40px] max-h-32 resize-none rounded-2xl"
-          />
-          <Button size="icon" onClick={() => send(input)} disabled={!input.trim()} className="h-10 w-10 shrink-0 rounded-full">
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+        }
+      />
     </div>
   );
 }
