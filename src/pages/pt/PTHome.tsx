@@ -9,8 +9,6 @@ import { fmtEUR, greetingPT } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { mockClients, mockChats } from "@/lib/mocks";
 import { NotificationsBell, type NotificationItem } from "@/components/NotificationsBell";
-import { useProfile } from "@/contexts/ProfileContext";
-import { UserAvatar } from "@/components/UserAvatar";
 
 const NOTIFICATIONS: NotificationItem[] = [
   { id: "n1", icon: Trophy, text: "Joana atingiu um novo record em supino — 43,5 kg!", to: "/pt/clients/c1", unread: true },
@@ -31,7 +29,6 @@ const NOTIFICATIONS: NotificationItem[] = [
 
 export default function PTHome() {
   const [aiOpen, setAiOpen] = useState(true);
-  const { profile } = useProfile();
 
   const active = mockClients.filter((c) => c.status !== "inativo").length;
   const revenue = mockClients.reduce((s, c) => s + (c.monthly_value ?? 0) + (c.session_value ? c.session_value * 8 : 0), 0);
