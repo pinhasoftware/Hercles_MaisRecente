@@ -348,14 +348,15 @@ function ChatThread({
             <div key={m.id} className={cn("flex", m.sender_role === "trainer" ? "justify-end" : "justify-start")}>
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                  "max-w-[80%] space-y-1.5 rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
                   m.sender_role === "trainer"
                     ? "rounded-br-sm bg-primary text-primary-foreground"
                     : "glass rounded-bl-sm",
                 )}
               >
-                <p className="whitespace-pre-wrap">{m.content}</p>
-                <p className={cn("mt-0.5 text-[9px] opacity-60", m.sender_role === "trainer" && "text-right")}>
+                {m.attachments?.map((a) => <ChatAttachmentBubble key={a.id} att={a} />)}
+                {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+                <p className={cn("text-[9px] opacity-60", m.sender_role === "trainer" && "text-right")}>
                   {new Date(m.created_at).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
@@ -384,34 +385,25 @@ function ChatThread({
         </div>
       )}
 
-      <div className="border-t border-border/60 bg-background/85 px-3 py-2.5 backdrop-blur-xl safe-bottom">
-        <div className="flex items-end gap-2">
+      <ChatComposer
+        text={input}
+        setText={setInput}
+        pending={pending}
+        setPending={setPending}
+        onSend={send}
+        placeholder="Mensagem…"
+        leftSlot={
           <Button
             size="icon"
             variant="ghost"
             onClick={suggest}
-            className="h-10 w-10 shrink-0 rounded-full text-accent hover:bg-accent/10"
+            className="h-10 w-10 shrink-0 self-center rounded-full text-accent hover:bg-accent/10"
             aria-label="Sugestões IA"
           >
             <Sparkles className="h-4 w-4" />
           </Button>
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send(input);
-              }
-            }}
-            placeholder="Mensagem…"
-            className="min-h-[40px] max-h-32 resize-none rounded-2xl"
-          />
-          <Button size="icon" onClick={() => send(input)} disabled={!input.trim()} className="h-10 w-10 shrink-0 rounded-full">
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+        }
+      />
     </div>
   );
 }
