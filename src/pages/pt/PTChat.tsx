@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ArrowLeft, Send, Sparkles, MessageCircle, MessageSquarePlus, Plus } from "lucide-react";
+import { ArrowLeft, Sparkles, MessageCircle, MessageSquarePlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { mockClients, mockChats, clientById, type MockChatMessage, type MockClient } from "@/lib/mocks";
+import { ChatComposer, ChatAttachmentBubble, type ChatAttachment } from "@/components/chat/ChatComposer";
+import { usePageState } from "@/contexts/PageStateContext";
 
 const ADDED_KEY = "fitpilot_pt_chat_added";
 
