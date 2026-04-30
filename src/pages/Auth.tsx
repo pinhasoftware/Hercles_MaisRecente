@@ -95,7 +95,7 @@ export default function Auth() {
 
       <div className="relative w-full animate-fade-in">
         <div className="mb-8 flex flex-col items-center text-center">
-          <img src={herclesLogo} alt="Hercles" className="mb-5 h-20 w-auto" />
+          <img src={herclesLogo} alt="Hercles" className="mb-5 h-28 w-auto" />
           <h1 className="text-3xl font-bold tracking-tight">Hercles</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {inviteToken && inviteTrainer
