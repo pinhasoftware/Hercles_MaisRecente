@@ -19,7 +19,7 @@ const NOTIFICATIONS: NotificationItem[] = [
   { id: "n6", icon: ShieldCheck, text: "Protege a tua conta — ativa autenticação 2FA.", to: "/pt/settings#seguranca" },
   { id: "n7", icon: AlertTriangle, text: "Plano gratuito no limite de alunos!", to: "/pt/settings#avancadas" },
   { id: "n8", icon: AlertTriangle, text: "O João continua sem plano de treino!", to: "/pt/clients/c2" },
-  { id: "n9", icon: Sparkles, text: "Pergunta ao FitPilot AI o que falta adicionares!", to: "/pt/ai" },
+  { id: "n9", icon: Sparkles, text: "Pergunta ao Hercles AI o que falta adicionares!", to: "/pt/ai" },
   { id: "n10", icon: UserX, text: "Carla não foi treinar hoje!", to: "/pt/clients/c3" },
   { id: "n11", icon: MessageCircle, text: "Joana deixou uma mensagem na comunidade alunos", to: "/pt/chat" },
   { id: "n12", icon: MapPin, text: "João está perdido no novo ginásio!", to: "/pt/chat/c2" },
