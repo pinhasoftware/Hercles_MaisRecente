@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import herclesLogo from "@/assets/hercles-logo.png";
 
 export default function Auth() {
   const { user, role, signIn, signUp, loading: authLoading } = useAuth();
