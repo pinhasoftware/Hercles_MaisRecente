@@ -23,7 +23,7 @@ export default function Index() {
 
       <div className="relative flex min-h-screen flex-col px-6 pb-10 pt-16">
         <div className="mb-10 flex items-center gap-2">
-          <img src={herclesLogo} alt="Hercles" className="h-10 w-auto" />
+          <img src={herclesLogo} alt="Hercles" className="h-14 w-auto" />
           <span className="text-lg font-bold tracking-tight">Hercles</span>
         </div>
 
