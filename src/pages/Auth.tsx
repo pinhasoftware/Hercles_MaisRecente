@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import herclesLogo from "@/assets/hercles-logo.png";
+import herclesHcLime from "@/assets/hercles-hc-lime.png";
 
 export default function Auth() {
   const { user, role, signIn, signUp, loading: authLoading } = useAuth();
@@ -106,6 +107,9 @@ export default function Auth() {
 
         {/* DEMO BYPASS — temporário para construção */}
         <div className="mb-4 rounded-2xl border border-dashed border-accent/40 bg-accent/5 p-3">
+          <div className="mb-2 flex items-center justify-center">
+            <img src={herclesHcLime} alt="HC" className="h-10 w-auto" />
+          </div>
           <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-wider gradient-text-ai">
             🚧 Modo construção — ver sem login
           </p>
