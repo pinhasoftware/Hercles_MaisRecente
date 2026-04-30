@@ -1,7 +1,7 @@
 {
-  "name": "FitPilot",
-  "short_name": "FitPilot",
-  "description": "FitPilot — gestão e treino para personal trainers e alunos.",
+  "name": "Hercles",
+  "short_name": "Hercles",
+  "description": "Hercles — gestão e treino para personal trainers e alunos.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

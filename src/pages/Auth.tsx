@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import herclesLogo from "@/assets/hercles-logo.png";
 
 export default function Auth() {
   const { user, role, signIn, signUp, loading: authLoading } = useAuth();
@@ -94,10 +95,8 @@ export default function Auth() {
 
       <div className="relative w-full animate-fade-in">
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow">
-            <Sparkles className="h-8 w-8 text-primary-foreground" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">FitPilot</h1>
+          <img src={herclesLogo} alt="Hercles" className="mb-5 h-20 w-auto" />
+          <h1 className="text-3xl font-bold tracking-tight">Hercles</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {inviteToken && inviteTrainer
               ? `${inviteTrainer} convidou-te para treinar.`

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Sparkles, Users, Dumbbell, ArrowRight } from "lucide-react";
+import { Users, Dumbbell, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import herclesLogo from "@/assets/hercles-logo.png";
 
 export default function Index() {
   const { user, role, loading } = useAuth();
@@ -14,7 +15,7 @@ export default function Index() {
 
   return (
     <div className="relative mx-auto min-h-screen max-w-md overflow-hidden bg-gradient-hero">
-      <title>FitPilot — O copilot inteligente de Personal Trainers</title>
+      <title>Hercles — O copilot inteligente de Personal Trainers</title>
       <meta name="description" content="App PWA para personal trainers e clientes. Treinos, calendário, chat, nutrição e Pilot AI." />
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-glow" />
@@ -22,10 +23,8 @@ export default function Index() {
 
       <div className="relative flex min-h-screen flex-col px-6 pb-10 pt-16">
         <div className="mb-10 flex items-center gap-2">
-          <div className="grid h-10 w-10 place-items-center rounded-xl shadow-glow" style={{ background: "var(--gradient-primary)" }}>
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-bold tracking-tight">FitPilot</span>
+          <img src={herclesLogo} alt="Hercles" className="h-10 w-auto" />
+          <span className="text-lg font-bold tracking-tight">Hercles</span>
         </div>
 
         <h1 className="text-4xl font-black leading-[1.05] tracking-tight">
