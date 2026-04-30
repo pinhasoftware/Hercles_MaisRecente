@@ -100,7 +100,7 @@ export default function PTSettings() {
           <AvatarField who="pt" />
           <Field label="Nome profissional"><Input defaultValue="Ricardo Pereira" /></Field>
           <Field label="Biografia"><Textarea placeholder="Conta a tua história..." /></Field>
-          <Field label="Email"><Input type="email" defaultValue="ricardo@fitpilot.app" /></Field>
+          <Field label="Email"><Input type="email" defaultValue="ricardo@hercles.app" /></Field>
           <Field label="Telefone"><Input type="tel" placeholder="+351 9XX XXX XXX" /></Field>
           <Field label="Especialidades"><Input placeholder="Hipertrofia, reabilitação, perda de peso..." /></Field>
           <Field label="Certificações"><Textarea placeholder="IPDJ Nível IV, NSCA-CPT..." /></Field>
