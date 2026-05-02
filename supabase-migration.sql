@@ -36,16 +36,6 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
-drop policy if exists "Profiles: read own + linked trainer" on public.profiles;
-create policy "Profiles: read own + linked trainer"
-  on public.profiles for select
-  to authenticated
-  using (
-    id = auth.uid()
-    or exists (select 1 from public.clients c where c.trainer_id = profiles.id and c.user_id = auth.uid())
-    or exists (select 1 from public.clients c where c.user_id = profiles.id and c.trainer_id = auth.uid())
-  );
-
 drop policy if exists "Profiles: update own" on public.profiles;
 create policy "Profiles: update own"
   on public.profiles for update
@@ -113,6 +103,17 @@ create policy "Clients: client reads own row"
   on public.clients for select
   to authenticated
   using (user_id = auth.uid());
+
+-- Profiles policy that depends on public.clients (must come after clients exists)
+drop policy if exists "Profiles: read own + linked trainer" on public.profiles;
+create policy "Profiles: read own + linked trainer"
+  on public.profiles for select
+  to authenticated
+  using (
+    id = auth.uid()
+    or exists (select 1 from public.clients c where c.trainer_id = profiles.id and c.user_id = auth.uid())
+    or exists (select 1 from public.clients c where c.user_id = profiles.id and c.trainer_id = auth.uid())
+  );
 
 -- ──────────────────────────────────────────────────────────────
 -- 5) SESSIONS
