@@ -193,8 +193,12 @@ declare
   v_invite_token text;
   v_invite record;
 begin
-  v_role := coalesce((new.raw_user_meta_data ->> 'role')::public.app_role, 'trainer');
   v_invite_token := new.raw_user_meta_data ->> 'invite_token';
+  -- If user signed up with an invite token, they're a client. Otherwise default to trainer.
+  v_role := case
+    when v_invite_token is not null then 'client'::public.app_role
+    else coalesce((new.raw_user_meta_data ->> 'role')::public.app_role, 'trainer')
+  end;
 
   insert into public.profiles (id, full_name, email)
   values (new.id, new.raw_user_meta_data ->> 'full_name', new.email)
