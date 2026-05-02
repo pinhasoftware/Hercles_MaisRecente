@@ -45,8 +45,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function fetchRole(userId: string) {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
-    setRole((data?.role as AppRole) ?? null);
+    const { data, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) {
+      console.error("[Auth] fetchRole error:", error);
+      // Fallback so the user is not stuck on the auth screen
+      setRole("client");
+      return;
+    }
+    if (!data?.role) {
+      console.warn("[Auth] No role row found for user", userId, "— defaulting to 'client'");
+      setRole("client");
+      return;
+    }
+    setRole(data.role as AppRole);
   }
 
   async function signIn(email: string, password: string) {
