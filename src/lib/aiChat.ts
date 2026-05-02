@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-const SUPABASE_URL = "https://tynoqcelrnqofmdzhxgd.supabase.co";
+const SUPABASE_URL = "https://pnxdmkkokzvzzmiqhrah.supabase.co";
 const CHAT_URL = `${SUPABASE_URL}/functions/v1/chat`;
 
 export type ChatMsg = { role: "user" | "assistant"; content: string };
