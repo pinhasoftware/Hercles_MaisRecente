@@ -313,3 +313,28 @@ function AvatarField({ who }: { who: "pt" | "client" }) {
     </Field>
   );
 }
+
+function ProfileSection() {
+  const { profile, setPTName } = useProfile();
+  const { user } = useAuth();
+  return (
+    <Section title="Perfil profissional" desc="O que os teus clientes vêem">
+      <AvatarField who="pt" />
+      <Field label="Nome profissional">
+        <Input
+          value={profile.pt.name}
+          onChange={(e) => setPTName(e.target.value)}
+          placeholder="O teu nome"
+        />
+      </Field>
+      <Field label="Biografia"><Textarea placeholder="Conta a tua história..." /></Field>
+      <Field label="Email">
+        <Input type="email" value={user?.email ?? ""} readOnly />
+      </Field>
+      <Field label="Telefone"><Input type="tel" placeholder="+351 9XX XXX XXX" /></Field>
+      <Field label="Especialidades"><Input placeholder="Hipertrofia, reabilitação, perda de peso..." /></Field>
+      <Field label="Certificações"><Textarea placeholder="IPDJ Nível IV, NSCA-CPT..." /></Field>
+      <Field label="Localização"><Input placeholder="Lisboa, Portugal" /></Field>
+    </Section>
+  );
+}
