@@ -9,6 +9,7 @@ import { fmtEUR, greetingPT } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { mockClients, mockChats } from "@/lib/mocks";
 import { NotificationsBell, type NotificationItem } from "@/components/NotificationsBell";
+import { useProfile } from "@/contexts/ProfileContext";
 
 const NOTIFICATIONS: NotificationItem[] = [
   { id: "n1", icon: Trophy, text: "Joana atingiu um novo record em supino — 43,5 kg!", to: "/pt/clients/c1", unread: true },
@@ -29,6 +30,8 @@ const NOTIFICATIONS: NotificationItem[] = [
 
 export default function PTHome() {
   const [aiOpen, setAiOpen] = useState(true);
+  const { profile } = useProfile();
+  const firstName = (profile.pt.name || "").trim().split(/\s+/)[0] || "treinador";
 
   const active = mockClients.filter((c) => c.status !== "inativo").length;
   const revenue = mockClients.reduce((s, c) => s + (c.monthly_value ?? 0) + (c.session_value ? c.session_value * 8 : 0), 0);
@@ -41,7 +44,7 @@ export default function PTHome() {
         <div className="flex items-center justify-between px-5 pb-4 pt-6">
           <div>
             <p className="text-xs font-medium text-muted-foreground">{greetingPT()},</p>
-            <h1 className="text-2xl font-bold tracking-tight">Olá Ricardo 👋</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Olá {firstName} 👋</h1>
             <p className="mt-0.5 text-xs text-muted-foreground">{active} clientes activos</p>
           </div>
           <div className="flex items-center gap-2">

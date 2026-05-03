@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
- * Perfil local — guarda avatar, nome e dados básicos no localStorage.
- * Quando o backend (Lovable Cloud) for ligado, podemos sincronizar daqui.
+ * Perfil local — guarda avatar, nome e dados básicos.
+ * O nome do PT é sincronizado a partir do utilizador autenticado (auth.user.user_metadata.full_name).
  */
 
 interface Profile {
@@ -17,11 +18,12 @@ interface Profile {
 }
 
 const DEFAULT: Profile = {
-  pt: { name: "Ricardo Pereira", avatarDataUrl: null },
-  client: { name: "Ana Silva", avatarDataUrl: null },
+  pt: { name: "", avatarDataUrl: null },
+  client: { name: "", avatarDataUrl: null },
 };
 
-const KEY = "fitpilot.profile.v1";
+const KEY = "hercles.profile.v1";
+const LEGACY_KEY = "fitpilot.profile.v1";
 
 interface Ctx {
   profile: Profile;
@@ -36,10 +38,15 @@ const ProfileContext = createContext<Ctx | undefined>(undefined);
 function load(): Profile {
   if (typeof window === "undefined") return DEFAULT;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY);
     if (!raw) return DEFAULT;
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT, ...parsed, pt: { ...DEFAULT.pt, ...parsed.pt }, client: { ...DEFAULT.client, ...parsed.client } };
+    return {
+      ...DEFAULT,
+      ...parsed,
+      pt: { ...DEFAULT.pt, ...(parsed.pt ?? {}) },
+      client: { ...DEFAULT.client, ...(parsed.client ?? {}) },
+    };
   } catch {
     return DEFAULT;
   }
@@ -47,6 +54,29 @@ function load(): Profile {
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile>(load);
+  const { user, role } = useAuth();
+
+  // Sincroniza o nome a partir do utilizador autenticado.
+  useEffect(() => {
+    if (!user) return;
+    const fullName =
+      (user.user_metadata?.full_name as string | undefined) ??
+      (user.user_metadata?.name as string | undefined) ??
+      user.email?.split("@")[0] ??
+      "";
+    if (!fullName) return;
+    setProfile((p) => {
+      if (role === "trainer") {
+        if (p.pt.name === fullName) return p;
+        return { ...p, pt: { ...p.pt, name: fullName } };
+      }
+      if (role === "client") {
+        if (p.client.name === fullName) return p;
+        return { ...p, client: { ...p.client, name: fullName } };
+      }
+      return p;
+    });
+  }, [user, role]);
 
   useEffect(() => {
     try { localStorage.setItem(KEY, JSON.stringify(profile)); } catch { /* */ }
