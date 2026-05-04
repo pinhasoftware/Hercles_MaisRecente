@@ -13,7 +13,8 @@ import { fmtEUR } from "@/lib/format";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { clientById, mockWorkouts, mockSessions, mockMeals } from "@/lib/mocks";
+import { clientById, mockWorkouts, mockSessions } from "@/lib/mocks";
+import { MealsEditor } from "@/components/pt/MealsEditor";
 import { uploadAvatar, uploadNutritionFile } from "@/lib/uploads";
 import { getAllLogs } from "@/lib/workoutLog";
 import { toast } from "sonner";
@@ -313,15 +314,10 @@ export default function PTClientProfile() {
               )}
             </div>
 
-            {mockMeals.map((m) => (
-              <div key={m.id} className="glass rounded-2xl p-4">
-                <div className="mb-1 flex items-center justify-between">
-                  <p className="font-semibold">{m.time} · {m.name}</p>
-                  <span className="text-xs text-muted-foreground">{m.kcal} kcal</span>
-                </div>
-                <p className="text-xs text-muted-foreground">{m.items.join(", ")}</p>
-              </div>
-            ))}
+            <div>
+              <Label className="mb-2 block text-xs font-bold uppercase tracking-wider text-primary">Refeições</Label>
+              <MealsEditor clientId={client.id} />
+            </div>
             <div className="glass rounded-2xl p-4">
               <Label className="text-xs font-bold uppercase tracking-wider text-primary">Dicas e recomendações</Label>
               <Textarea defaultValue="Beber 2L de água. Evitar açúcar refinado." className="mt-2 min-h-[80px]" />
