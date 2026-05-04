@@ -16,6 +16,10 @@ export default function PTWorkoutBuilder() {
   const initial = mockWorkouts.find((w) => w.id === workoutId)?.exercises ?? [];
   const [name, setName] = useState(mockWorkouts.find((w) => w.id === workoutId)?.name ?? "Novo treino");
   const [exercises, setExercises] = useState<MockExercise[]>(initial);
+  const [days, setDays] = useState<string[]>(() => {
+    const d = mockWorkouts.find((w) => w.id === workoutId)?.day;
+    return d ? [d] : [];
+  });
   const [editing, setEditing] = useState<MockExercise | null>(null);
   const [creating, setCreating] = useState(false);
 
@@ -95,6 +99,27 @@ export default function PTWorkoutBuilder() {
           className="w-full bg-transparent text-2xl font-bold tracking-tight outline-none"
         />
         <p className="mt-0.5 text-xs text-muted-foreground">{exercises.length} exercícios · arrasta para reordenar</p>
+        <div className="mt-3">
+          <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dias da semana</p>
+          <div className="flex flex-wrap gap-1.5">
+            {["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"].map((d) => {
+              const active = days.includes(d);
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDays((prev) => active ? prev.filter(x => x !== d) : [...prev, d])}
+                  className={cn(
+                    "h-8 min-w-10 rounded-full px-3 text-xs font-bold transition-all",
+                    active ? "bg-primary text-primary-foreground shadow-glow" : "bg-secondary text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {d}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </header>
 
       <section className="px-5 pt-3">

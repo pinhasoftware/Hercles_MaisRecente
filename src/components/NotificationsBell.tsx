@@ -36,6 +36,7 @@ interface Props {
 export function NotificationsBell({ items, align = "right", storageKey = "fitpilot.notifications.cleared" }: Props) {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [revealedId, setRevealedId] = useState<string | null>(null);
   const [clearedIds, setClearedIds] = useState<Set<string>>(() => {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -109,8 +110,9 @@ export function NotificationsBell({ items, align = "right", storageKey = "fitpil
               )}
               {visible.map((n) => {
                 const Icon = n.icon;
+                const isRevealed = revealedId === n.id;
                 const inner = (
-                  <div className="flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/40">
+                  <div className="flex items-start gap-3 px-4 py-3 text-left">
                     <div className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground">
                       <Icon className="h-4 w-4" />
                     </div>
@@ -121,9 +123,29 @@ export function NotificationsBell({ items, align = "right", storageKey = "fitpil
                   </div>
                 );
                 return (
-                  <li key={n.id}>
+                  <li key={n.id} className="relative overflow-hidden">
                     {n.to ? (
-                      <button onClick={() => go(n.to)} className="block w-full">{inner}</button>
+                      <>
+                        <button
+                          onClick={() => setRevealedId(isRevealed ? null : n.id)}
+                          className={cn(
+                            "block w-full transition-transform duration-200 hover:bg-secondary/40",
+                            isRevealed && "-translate-x-16",
+                          )}
+                        >
+                          {inner}
+                        </button>
+                        <button
+                          onClick={() => go(n.to)}
+                          className={cn(
+                            "absolute right-0 top-0 flex h-full w-16 items-center justify-center bg-primary text-xs font-bold text-primary-foreground transition-transform duration-200",
+                            isRevealed ? "translate-x-0" : "translate-x-full",
+                          )}
+                          aria-label="Ir"
+                        >
+                          Ir →
+                        </button>
+                      </>
                     ) : (
                       <div>{inner}</div>
                     )}

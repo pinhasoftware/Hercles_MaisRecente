@@ -482,9 +482,21 @@ function FinishOverlay({ seconds, doneSets, totalSets, onClose }: { seconds: num
           <Stat label="Streak" value="+1" />
         </div>
 
-        <Button onClick={onClose} className="mt-6 h-12 w-full rounded-full bg-gradient-primary text-primary-foreground shadow-glow">
-          <Sparkles className="mr-2 h-4 w-4" /> Fixe!
-        </Button>
+        <div className="mt-6 grid grid-cols-2 gap-2">
+          <Button
+            onClick={() => { window.location.reload(); }}
+            variant="outline"
+            className="h-12 rounded-full"
+          >
+            Repetir
+          </Button>
+          <Button
+            onClick={onClose}
+            className="h-12 rounded-full bg-gradient-primary text-primary-foreground shadow-glow"
+          >
+            <Sparkles className="mr-1 h-4 w-4" /> Próximo
+          </Button>
+        </div>
       </div>
     </div>
   );
