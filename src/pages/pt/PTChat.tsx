@@ -375,6 +375,8 @@ function ChatThread({
             {suggestions.map((s, i) => (
               <button
                 key={i}
+                onMouseDown={(e) => e.preventDefault()}
+                onTouchStart={(e) => e.preventDefault()}
                 onClick={() => setInput(s)}
                 className="ai-border glass relative shrink-0 max-w-[260px] rounded-xl px-3 py-2 text-left text-xs hover:bg-accent/10"
               >
@@ -396,6 +398,8 @@ function ChatThread({
           <Button
             size="icon"
             variant="ghost"
+            onMouseDown={(e) => e.preventDefault()}
+            onTouchStart={(e) => e.preventDefault()}
             onClick={toggleSuggest}
             className={cn(
               "h-10 w-10 shrink-0 self-center rounded-full text-accent hover:bg-accent/10",
